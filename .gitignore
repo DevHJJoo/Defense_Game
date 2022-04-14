@@ -1,0 +1,28 @@
+#####################
+
+#Unreal Generated Files#
+
+####################
+
+/DerivedDataCache
+/Intermediate
+/Saved
+/Script
+/TowerDefense.uproject
+
+############
+
+#Asset Files#
+
+###########
+
+/Content
+
+##################
+
+#VS Generated Files#
+
+#################
+
+/.vs
+/TowerDefense.sln
