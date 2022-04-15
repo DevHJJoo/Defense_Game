@@ -3,6 +3,7 @@
 #pragma once
 
 #include "../global.h"
+#include "../MyAnimInstance.h"
 
 #include "CoreMinimal.h"
 #include "MyTower.h"
