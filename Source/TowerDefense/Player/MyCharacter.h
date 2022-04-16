@@ -42,5 +42,4 @@ public:
 	void MoveFront(float _fScale);
 	void MoveSide(float _fScale);
 	void Zoom(float _fScale);
-
 };

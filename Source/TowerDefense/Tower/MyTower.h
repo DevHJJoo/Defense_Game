@@ -25,6 +25,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	int							m_iTowerLv;
 
+	UPROPERTY(VisibleAnywhere)
+	bool						m_bIsNeedToUpgrade;
+
 	// 가장 가까이 인지한 몬스터의 방향을 가리키도록 한다.
 
 	UPROPERTY(VisibleAnywhere)
@@ -35,6 +38,8 @@ private:
 	bool						m_bAttack;
 	bool						m_bFire;
 
+	//UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	ETOWER_STATE				m_eState;
 
 protected:
@@ -44,7 +49,8 @@ protected:
 	//FTowerInfo				m_Info;
 
 public:
-	
+	void SetUpgrade(bool _b) { m_bIsNeedToUpgrade = _b; }
+	bool IsNeedToUpgrade() { return m_bIsNeedToUpgrade; }
 	void SetDirection(float _f) { m_fDirection = _f; }
 	float GetDirection() { return m_fDirection; }
 	void SetAttack(bool _b) { m_bAttack = _b; }
@@ -58,6 +64,9 @@ public:
 protected:
 	TArray<UAnimMontage*>	m_arrMontage;
 
+	void InitTowerMontage(const TCHAR* _strInstall, const TCHAR* _strAttack, const TCHAR* _strIdle, const TCHAR* _strRemove);
+	void ChangeTowerMontage(const TCHAR* _strInstall, const TCHAR* _strAttack, const TCHAR* _strIdle, const TCHAR* _strRemove);
+	void RemoveMontage() { m_arrMontage.Empty(); }
 public:
 	UMyAnimInstance* GetAnimInst() { return m_AnimInst; }
 
@@ -81,12 +90,15 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	virtual bool UpgradeTower();
-	virtual void RemoveTower();
+	virtual void DestroyProcess() {}
 
 	// Anim Montage play
 protected:
-	virtual void Attack() {}
 	virtual void Install() {}
+	virtual void Idle() {}
+	virtual void Attack() {}
+	virtual void NeedUpgrade() {}
+	virtual void Upgrade() {}
+	virtual void RemoveWithUpgarde() {}
 	virtual void Remove() {}
 };

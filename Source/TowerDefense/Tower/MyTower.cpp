@@ -21,24 +21,116 @@ AMyTower::AMyTower()
 
 void AMyTower::ChangeState(ETOWER_STATE _eNextState)
 {
+	if (m_eState == _eNextState)
+		return;
+	
 	m_eState = _eNextState;
+
 	switch (_eNextState)
 	{
 	case ETOWER_STATE::INSTALL:
+	{
+		Install();
+	}
 		break;
 	case ETOWER_STATE::IDLE:
+	{
+		Idle();
+	}
 		break;
 	case ETOWER_STATE::ATTACK:
+	{
+		Attack();
+	}
 		break;
-	case ETOWER_STATE::UPGRADE:
+	case ETOWER_STATE::NEEDUPGRADE:
+	{
+		NeedUpgrade();
+	}
 		break;
 	case ETOWER_STATE::REMOVEWITHUPGRADE:
+	{
+		RemoveWithUpgarde();
+	}
 		break;
 	case ETOWER_STATE::REMOVE:
+	{
+		Remove();
+	}
 		break;
 	default:
 		break;
 	}
+}
+
+void AMyTower::InitTowerMontage(const TCHAR* _strInstall, const TCHAR* _strAttack, const TCHAR* _strIdle, const TCHAR* _strRemove)
+{
+	ConstructorHelpers::FObjectFinder<UAnimMontage> Install
+	(_strInstall);
+	ConstructorHelpers::FObjectFinder<UAnimMontage> Attack
+	(_strAttack);
+	ConstructorHelpers::FObjectFinder<UAnimMontage> Idle
+	(_strIdle);
+	ConstructorHelpers::FObjectFinder<UAnimMontage> Remove
+	(_strRemove);
+
+	if (Install.Succeeded())
+		m_arrMontage.Add(Install.Object);
+	if (Attack.Succeeded())
+		m_arrMontage.Add(Attack.Object);
+	if (Idle.Succeeded())
+		m_arrMontage.Add(Idle.Object);
+	if (Remove.Succeeded())
+		m_arrMontage.Add(Remove.Object);
+}
+
+void AMyTower::ChangeTowerMontage(const TCHAR* _strInstall, const TCHAR* _strAttack, const TCHAR* _strIdle, const TCHAR* _strRemove)
+{
+	m_arrMontage.Empty();
+	UAnimMontage* Montage = LoadObject<UAnimMontage>(NULL, _strInstall);
+	m_arrMontage.Add(Montage);
+	Montage = LoadObject<UAnimMontage>(NULL, _strAttack);
+	m_arrMontage.Add(Montage);
+	Montage = LoadObject<UAnimMontage>(NULL, _strIdle);
+	m_arrMontage.Add(Montage);
+	Montage = LoadObject<UAnimMontage>(NULL, _strRemove);
+	m_arrMontage.Add(Montage);
+	return;
+
+	//TArray<UAnimMontage*> ChangedMontage;
+	//
+	//// _strInstall
+	///*UAnimMontage**/ Montage = LoadObject<UAnimMontage>(NULL, _strInstall);
+	//if (Montage)
+	//	ChangedMontage.Add(Montage);
+	//	//m_arrMontage.Add(Montage);
+	//else
+	//	return false;
+
+	//// _strAttack
+	//Montage = LoadObject<UAnimMontage>(NULL, _strAttack);
+	//if (Montage)
+	//	ChangedMontage.Add(Montage);
+	//else
+	//	return false;
+
+	//// _strIdle
+	//Montage = LoadObject<UAnimMontage>(NULL, _strIdle);
+	//if (Montage)
+	//	ChangedMontage.Add(Montage);
+	//else
+	//	return false;
+
+	//// _strRemove
+	//Montage = LoadObject<UAnimMontage>(NULL, _strRemove);
+	//if (Montage)
+	//	ChangedMontage.Add(Montage);
+	//else
+	//	return false;
+
+	//m_arrMontage.Empty();
+	//m_arrMontage = ChangedMontage;
+	//return true;
 }
 
 // Called when the game starts or when spawned
@@ -58,16 +150,6 @@ void AMyTower::Tick(float DeltaTime)
 	if (m_fDirection >= 360.f)
 		m_fDirection = 0.f;
 
-	m_eState = ETOWER_STATE::ATTACK;
+	//m_eState = ETOWER_STATE::ATTACK;
 
-}
-
-bool AMyTower::UpgradeTower()
-{
-	return true;
-}
-
-void AMyTower::RemoveTower()
-{
-	Destroy();
 }

@@ -29,6 +29,14 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	virtual bool UpgradeTower() override;
-	virtual void RemoveTower() override;
+	virtual void DestroyProcess() override;
+
+protected:
+	virtual void Install() override;
+	virtual void Idle() override;
+	virtual void Attack() override;
+	virtual void NeedUpgrade() override;
+	virtual void Upgrade() override;
+	virtual void RemoveWithUpgarde() override;
+	virtual void Remove() override;
 };

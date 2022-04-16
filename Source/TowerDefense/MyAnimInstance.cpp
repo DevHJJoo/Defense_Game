@@ -34,6 +34,7 @@ void UMyAnimInstance::AnimNotify_AttackEnd()
 
 	if (nullptr != pTower)
 	{
+		pTower->SetAttack(false);
 		pTower->ChangeState(ETOWER_STATE::IDLE);
 	}
 }
@@ -44,6 +45,7 @@ void UMyAnimInstance::AnimNotify_Fire()
 
 	if (nullptr != pTower)
 	{
+		// Projectile spawn
 	}
 
 }
@@ -65,6 +67,13 @@ void UMyAnimInstance::AnimNotify_RemoveEnd()
 
 	if (nullptr != pTower)
 	{
+		if (ETOWER_STATE::REMOVE == pTower->GetState())
+		{
+			pTower->DestroyProcess();
+		}
+		if(ETOWER_STATE::REMOVEWITHUPGRADE == pTower->GetState())
+		{
+			pTower->ChangeState(ETOWER_STATE::NEEDUPGRADE);
+		}
 	}
-
 }
