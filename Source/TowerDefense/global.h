@@ -1,5 +1,8 @@
 #pragma once
 
 #include "EngineMinimal.h"
+#include <Engine/DataTable.h>
+#include <DrawDebugHelpers.h>
 
 #include "define.h"
+#include "MyStruct.h"

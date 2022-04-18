@@ -22,7 +22,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent*		m_TowerMesh;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int							m_iTowerLv;
 
 	UPROPERTY(VisibleAnywhere)
@@ -35,12 +35,13 @@ private:
 
 	UMyAnimInstance*			m_AnimInst;
 
-	bool						m_bAttack;
 	bool						m_bFire;
 
-	//UPROPERTY(VisibleAnywhere)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	ETOWER_STATE				m_eState;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Info, meta = (AllowPrivateAccess = "true"))
+	FTowerInfo					m_Info;
 
 protected:
 	ETOWER_TYPE					m_eTowerType;
@@ -53,8 +54,6 @@ public:
 	bool IsNeedToUpgrade() { return m_bIsNeedToUpgrade; }
 	void SetDirection(float _f) { m_fDirection = _f; }
 	float GetDirection() { return m_fDirection; }
-	void SetAttack(bool _b) { m_bAttack = _b; }
-	bool GetAttack() { return m_bAttack; }
 	void SetFire(bool _b) { m_bFire = _b; }
 	bool GetFire() { return m_bFire; }
 
@@ -89,9 +88,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Notify
 public:
+	virtual void Fire() {}
 	virtual void DestroyProcess() {}
-
+	
 	// Anim Montage play
 protected:
 	virtual void Install() {}

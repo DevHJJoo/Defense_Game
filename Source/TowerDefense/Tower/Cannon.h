@@ -16,6 +16,9 @@ UCLASS()
 class TOWERDEFENSE_API ACannon : public AMyTower
 {
 	GENERATED_BODY()
+// 아래 인터벌 변수는 테스트 변수니까 지워야 한다.
+private:
+	float m_fAttackInterval;
 
 public:
 	ACannon();
@@ -28,7 +31,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// 콜백
 public:
+	virtual void Fire() override;
 	virtual void DestroyProcess() override;
 
 protected:

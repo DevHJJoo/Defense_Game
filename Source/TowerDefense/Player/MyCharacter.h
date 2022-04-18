@@ -21,6 +21,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent*	m_Arm;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Info, meta = (AllowPrivateAccess = "true"))
+	FPlayerInfo				m_Info;
+
 public:
 	// Sets default values for this character's properties
 	AMyCharacter();

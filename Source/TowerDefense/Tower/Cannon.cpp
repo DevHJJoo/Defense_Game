@@ -3,6 +3,7 @@
 
 #include "Cannon.h"
 
+#include "../Effect/MyEffect.h"
 
 // Sets default values
 ACannon::ACannon()
@@ -28,6 +29,11 @@ ACannon::ACannon()
 	SetTowerLv(1);
 	SetTowerType(ETOWER_TYPE::CANNON);
 	ChangeState(ETOWER_STATE::INSTALL);
+
+	/*
+	반드시 테스트 후 이 변수는 지울 것.
+	*/
+	m_fAttackInterval = 0.f;
 }
 
 // Called when the game starts or when spawned
@@ -46,26 +52,61 @@ void ACannon::Tick(float DeltaTime)
 		Upgrade();
 	}
 
-	static bool change = false;
-	static float testval = 0.f;
-	testval += DeltaTime;
-
-	if (testval >= 3.0
-		&& GetTowerLv() != 4)
+	m_fAttackInterval += DeltaTime;
+	if (m_fAttackInterval >= 3.0)
 	{
-		change = true;
-		testval = 0.f;
-		ChangeState(ETOWER_STATE::REMOVEWITHUPGRADE);
+		m_fAttackInterval = 0.f;
+		ChangeState(ETOWER_STATE::ATTACK);
+	}
+}
+
+void ACannon::Fire()
+{
+	const FName fnSocket1 = FName(TEXT("Bone_002socket"));
+	const FName fnSocket2 = FName(TEXT("Bone_002socket1"));
+
+	/*if ((nullptr == GetMesh()->GetSocketByName(fnSocket1))
+		|| (nullptr == GetMesh()->GetSocketByName(fnSocket2)))
+		return;*/
+
+	FActorSpawnParameters SpawnParam = {};
+
+	// 지연 생성
+	SpawnParam.OverrideLevel = GetLevel();
+	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParam.bDeferConstruction = true;
+
+
+	Vec3 vScale = Vec3(3.f);
+
+	FTransform tEffectTrans = GetMesh()->GetSocketTransform(fnSocket1);
+	tEffectTrans.SetScale3D(vScale);
+
+	AMyEffect* pEffect = GetWorld()->SpawnActor<AMyEffect>(AMyEffect::StaticClass(), tEffectTrans, SpawnParam);
+	pEffect->SetEffectType(EEFFECT_TYPE::MUZZLEFLASH);
+
+	pEffect->FinishSpawning(pEffect->GetTransform());
+
+	if (4 == GetTowerLv())
+	{
+		tEffectTrans = GetMesh()->GetSocketTransform(fnSocket2);
+		tEffectTrans.SetScale3D(vScale);
+
+		pEffect = GetWorld()->SpawnActor<AMyEffect>(AMyEffect::StaticClass(), tEffectTrans, SpawnParam);
+		pEffect->SetEffectType(EEFFECT_TYPE::MUZZLEFLASH);
+
+		pEffect->FinishSpawning(pEffect->GetTransform());
 	}
 }
 
 void ACannon::DestroyProcess()
 {
+	Destroy();
 }
 
 void ACannon::Install()
 {
-	ChangeState(ETOWER_STATE::IDLE);
+	// Info 구조체를 설정할 것?
 }
 
 void ACannon::Idle()
@@ -138,6 +179,7 @@ void ACannon::Upgrade()
 
 		SetTowerLv(CurLv + 1);
 
+		SetUpgrade(false);
 		ChangeState(ETOWER_STATE::INSTALL);		
 	}
 }

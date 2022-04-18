@@ -3,11 +3,12 @@
 
 #include "MyTower.h"
 #include "../MyAnimInstance.h"
+#include "../Player/MyCharacter.h"
 
 // Sets default values
 AMyTower::AMyTower()
-	: m_bAttack(false)
-	, m_eState(ETOWER_STATE::INSTALL)
+	: m_bIsNeedToUpgrade(false)
+	, m_eState(ETOWER_STATE::IDLE)
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -139,6 +140,7 @@ void AMyTower::BeginPlay()
 	Super::BeginPlay();
 	
 	m_AnimInst = Cast<UMyAnimInstance>(GetMesh()->GetAnimInstance());
+	ChangeState(ETOWER_STATE::INSTALL);
 }
 
 // Called every frame
@@ -146,10 +148,23 @@ void AMyTower::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	m_fDirection += DeltaTime * 40.f;
+	AMyCharacter* Player = Cast<AMyCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (nullptr != Player)
+	{
+		Vec3 vTowerPos = GetActorLocation();
+		Vec3 vTargetDir = Player->GetActorLocation() - vTowerPos;
+		vTargetDir.Z = 0.f;
+		vTargetDir.Normalize();
+
+		FRotator fRot = FRotationMatrix::MakeFromX(vTargetDir).Rotator();
+
+		UE_LOG(LogTemp, Warning,
+			TEXT("Rot val x : %f, y : %f, z : %f"), fRot.Roll, fRot.Pitch, fRot.Yaw)
+
+			m_fDirection = fRot.Yaw;
+	}
+	
+	/*m_fDirection += DeltaTime * 40.f;
 	if (m_fDirection >= 360.f)
-		m_fDirection = 0.f;
-
-	//m_eState = ETOWER_STATE::ATTACK;
-
+		m_fDirection = 0.f;*/
 }
