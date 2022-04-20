@@ -87,9 +87,8 @@ enum ETOWER_MONTAGE : uint8
 UENUM(BlueprintType)
 enum class EMON_STATE : uint8
 {
-	IDLE,
+	IDLE = 0,
 	MOVE,
-	ATTACK,
 	HIT,
 	DEAD
 };

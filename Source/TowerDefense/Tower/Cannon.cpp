@@ -4,6 +4,8 @@
 #include "Cannon.h"
 
 #include "../Effect/MyEffect.h"
+#include "../Manager/EffectMgr.h"
+#include "../Projectile/Missile/Missile.h"
 
 // Sets default values
 ACannon::ACannon()
@@ -62,41 +64,46 @@ void ACannon::Tick(float DeltaTime)
 
 void ACannon::Fire()
 {
-	const FName fnSocket1 = FName(TEXT("Bone_002socket"));
-	const FName fnSocket2 = FName(TEXT("Bone_002socket1"));
-
-	/*if ((nullptr == GetMesh()->GetSocketByName(fnSocket1))
-		|| (nullptr == GetMesh()->GetSocketByName(fnSocket2)))
-		return;*/
-
-	FActorSpawnParameters SpawnParam = {};
-
-	// 지연 생성
-	SpawnParam.OverrideLevel = GetLevel();
-	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParam.bDeferConstruction = true;
-
+	FName fnSocket = FName(TEXT("Bone_002socket"));
+	FTransform tEffectTrans = GetMesh()->GetSocketTransform(fnSocket);
 
 	Vec3 vScale = Vec3(3.f);
-
-	FTransform tEffectTrans = GetMesh()->GetSocketTransform(fnSocket1);
 	tEffectTrans.SetScale3D(vScale);
 
-	AMyEffect* pEffect = GetWorld()->SpawnActor<AMyEffect>(AMyEffect::StaticClass(), tEffectTrans, SpawnParam);
-	pEffect->SetEffectType(EEFFECT_TYPE::MUZZLEFLASH);
-
-	pEffect->FinishSpawning(pEffect->GetTransform());
+	UEffectMgr::GetInst(GetWorld())->CreateEffect(EEFFECT_TYPE::MUZZLEFLASH, tEffectTrans, GetLevel());
+	ACannon::SpawnProjectile(tEffectTrans);
 
 	if (4 == GetTowerLv())
 	{
-		tEffectTrans = GetMesh()->GetSocketTransform(fnSocket2);
+		fnSocket = FName(TEXT("Bone_002socket1"));
+		tEffectTrans = GetMesh()->GetSocketTransform(fnSocket);
+		
 		tEffectTrans.SetScale3D(vScale);
 
-		pEffect = GetWorld()->SpawnActor<AMyEffect>(AMyEffect::StaticClass(), tEffectTrans, SpawnParam);
-		pEffect->SetEffectType(EEFFECT_TYPE::MUZZLEFLASH);
-
-		pEffect->FinishSpawning(pEffect->GetTransform());
+		UEffectMgr::GetInst(GetWorld())->CreateEffect(EEFFECT_TYPE::MUZZLEFLASH, tEffectTrans, GetLevel());
+		ACannon::SpawnProjectile(tEffectTrans);
 	}
+}
+
+void ACannon::SpawnProjectile(FTransform _trans)
+{
+	Vec3 vPos = _trans.GetLocation();
+	Vec3 vForward = _trans.GetRotation().Rotator().Vector();
+
+	FActorSpawnParameters SpawnParam = {};
+	// 생성될 레벨
+	SpawnParam.OverrideLevel = GetLevel();
+	// 충돌될 지점이 어디인지에 따라 스폰을 할 지에 대한 것을 나타냄
+	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	// 지연 스폰.
+	SpawnParam.bDeferConstruction = true;
+
+	AMissile* pMissile = GetWorld()->SpawnActor<AMissile>(m_Projectile
+		, vPos + vForward * 50.f
+		, vForward.Rotation(), SpawnParam);
+
+	// BeginPlay 호출
+	pMissile->FinishSpawning(pMissile->GetTransform());
 }
 
 void ACannon::DestroyProcess()

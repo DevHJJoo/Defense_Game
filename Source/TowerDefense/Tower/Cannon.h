@@ -4,6 +4,7 @@
 
 #include "../global.h"
 #include "../MyAnimInstance.h"
+#include "../Projectile/ProjectileBase.h"
 
 #include "CoreMinimal.h"
 #include "MyTower.h"
@@ -20,6 +21,9 @@ class TOWERDEFENSE_API ACannon : public AMyTower
 private:
 	float m_fAttackInterval;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Info, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AProjectileBase> m_Projectile;
+
 public:
 	ACannon();
 
@@ -35,6 +39,9 @@ public:
 public:
 	virtual void Fire() override;
 	virtual void DestroyProcess() override;
+
+private:
+	void SpawnProjectile(FTransform _trans);
 
 protected:
 	virtual void Install() override;

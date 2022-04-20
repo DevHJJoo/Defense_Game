@@ -46,9 +46,6 @@ private:
 protected:
 	ETOWER_TYPE					m_eTowerType;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Info, meta = (AllowPrivateAccess = "true"))
-	//FTowerInfo				m_Info;
-
 public:
 	void SetUpgrade(bool _b) { m_bIsNeedToUpgrade = _b; }
 	bool IsNeedToUpgrade() { return m_bIsNeedToUpgrade; }

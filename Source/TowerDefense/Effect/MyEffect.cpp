@@ -40,7 +40,7 @@ void AMyEffect::BeginPlay()
 		break;
 	case EEFFECT_TYPE::HIT:
 		ParticleAsset = LoadObject<UParticleSystem>(GetWorld(),
-			TEXT("ParticleSystem'/Game/LowPolyVFX/Particles/P_Hit_02.P_Hit_02'"));
+		TEXT("ParticleSystem'/Game/LowPolyVFX/Particles/P_Hit_02.P_Hit_02'"));
 		break;
 	case EEFFECT_TYPE::ZONE:
 		break;

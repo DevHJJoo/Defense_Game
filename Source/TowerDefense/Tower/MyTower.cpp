@@ -148,21 +148,30 @@ void AMyTower::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	AMyCharacter* Player = Cast<AMyCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (nullptr != Player)
+	AMyCharacter* pPlayer = Cast<AMyCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if (nullptr != pPlayer)
 	{
 		Vec3 vTowerPos = GetActorLocation();
-		Vec3 vTargetDir = Player->GetActorLocation() - vTowerPos;
-		vTargetDir.Z = 0.f;
-		vTargetDir.Normalize();
+		float fDistance = Vec3::Distance(vTowerPos, pPlayer->GetActorLocation());
+		
+		if (fDistance < 600.f)
+		{
+			Vec3 vTargetDir = pPlayer->GetActorLocation() - vTowerPos;
+			vTargetDir.Z = 0.f;
+			vTargetDir.Normalize();
 
-		FRotator fRot = FRotationMatrix::MakeFromX(vTargetDir).Rotator();
-
-		UE_LOG(LogTemp, Warning,
-			TEXT("Rot val x : %f, y : %f, z : %f"), fRot.Roll, fRot.Pitch, fRot.Yaw)
+			FRotator fRot = FRotationMatrix::MakeFromX(vTargetDir).Rotator();
 
 			m_fDirection = fRot.Yaw;
+		}
+		else
+		{
+			m_fDirection += DeltaTime * 40.f;
+			if (m_fDirection >= 360.f)
+				m_fDirection = 0.f;
+		}
 	}
+	
 	
 	/*m_fDirection += DeltaTime * 40.f;
 	if (m_fDirection >= 360.f)
