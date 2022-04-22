@@ -1,0 +1,4 @@
+,Name,F Max HP,F Cur HP,F Max Shield,F Cur Shield,F Origin Move Speed,F Cur Move Speed,F Def,F Shield Def,I Gold
+NormalRatEasy,NormalRatEasy,100,100,0,0,200,200,50,0,50
+NormalRatHard,NormalRatHard,200,200,0,0,300,300,70,0,70
+NormalRatExt,NormalRatExt,300,300,0,0,400,400,90,0,90

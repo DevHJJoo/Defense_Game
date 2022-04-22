@@ -1,9 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "MyTower.h"
+
 #include "../MyAnimInstance.h"
-#include "../Player/MyCharacter.h"
+#include "../Monster/Monster.h"
 
 // Sets default values
 AMyTower::AMyTower()
@@ -18,6 +16,10 @@ AMyTower::AMyTower()
 
 	m_TowerMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("TowerMesh"));
 	m_TowerMesh->SetupAttachment(m_Root);
+
+	m_DetectSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectSphere"));
+	m_DetectSphere->SetupAttachment(m_Root);
+	m_DetectSphere->SetCollisionProfileName(TEXT("TowerType"));
 }
 
 void AMyTower::ChangeState(ETOWER_STATE _eNextState)
@@ -64,76 +66,6 @@ void AMyTower::ChangeState(ETOWER_STATE _eNextState)
 	}
 }
 
-void AMyTower::InitTowerMontage(const TCHAR* _strInstall, const TCHAR* _strAttack, const TCHAR* _strIdle, const TCHAR* _strRemove)
-{
-	ConstructorHelpers::FObjectFinder<UAnimMontage> Install
-	(_strInstall);
-	ConstructorHelpers::FObjectFinder<UAnimMontage> Attack
-	(_strAttack);
-	ConstructorHelpers::FObjectFinder<UAnimMontage> Idle
-	(_strIdle);
-	ConstructorHelpers::FObjectFinder<UAnimMontage> Remove
-	(_strRemove);
-
-	if (Install.Succeeded())
-		m_arrMontage.Add(Install.Object);
-	if (Attack.Succeeded())
-		m_arrMontage.Add(Attack.Object);
-	if (Idle.Succeeded())
-		m_arrMontage.Add(Idle.Object);
-	if (Remove.Succeeded())
-		m_arrMontage.Add(Remove.Object);
-}
-
-void AMyTower::ChangeTowerMontage(const TCHAR* _strInstall, const TCHAR* _strAttack, const TCHAR* _strIdle, const TCHAR* _strRemove)
-{
-	m_arrMontage.Empty();
-	UAnimMontage* Montage = LoadObject<UAnimMontage>(NULL, _strInstall);
-	m_arrMontage.Add(Montage);
-	Montage = LoadObject<UAnimMontage>(NULL, _strAttack);
-	m_arrMontage.Add(Montage);
-	Montage = LoadObject<UAnimMontage>(NULL, _strIdle);
-	m_arrMontage.Add(Montage);
-	Montage = LoadObject<UAnimMontage>(NULL, _strRemove);
-	m_arrMontage.Add(Montage);
-	return;
-
-	//TArray<UAnimMontage*> ChangedMontage;
-	//
-	//// _strInstall
-	///*UAnimMontage**/ Montage = LoadObject<UAnimMontage>(NULL, _strInstall);
-	//if (Montage)
-	//	ChangedMontage.Add(Montage);
-	//	//m_arrMontage.Add(Montage);
-	//else
-	//	return false;
-
-	//// _strAttack
-	//Montage = LoadObject<UAnimMontage>(NULL, _strAttack);
-	//if (Montage)
-	//	ChangedMontage.Add(Montage);
-	//else
-	//	return false;
-
-	//// _strIdle
-	//Montage = LoadObject<UAnimMontage>(NULL, _strIdle);
-	//if (Montage)
-	//	ChangedMontage.Add(Montage);
-	//else
-	//	return false;
-
-	//// _strRemove
-	//Montage = LoadObject<UAnimMontage>(NULL, _strRemove);
-	//if (Montage)
-	//	ChangedMontage.Add(Montage);
-	//else
-	//	return false;
-
-	//m_arrMontage.Empty();
-	//m_arrMontage = ChangedMontage;
-	//return true;
-}
-
 // Called when the game starts or when spawned
 void AMyTower::BeginPlay()
 {
@@ -148,8 +80,14 @@ void AMyTower::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	AMyCharacter* pPlayer = Cast<AMyCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	if (nullptr != pPlayer)
+	TArray<AActor*> TargetList;
+
+	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMonster::StaticClass(), TargetList);
+	/*for (AActor* TargetList : TargetList)
+	{
+		TargetList.
+	}
+	if (nullptr != TargetList)
 	{
 		Vec3 vTowerPos = GetActorLocation();
 		float fDistance = Vec3::Distance(vTowerPos, pPlayer->GetActorLocation());
@@ -170,7 +108,7 @@ void AMyTower::Tick(float DeltaTime)
 			if (m_fDirection >= 360.f)
 				m_fDirection = 0.f;
 		}
-	}
+	}*/
 	
 	
 	/*m_fDirection += DeltaTime * 40.f;

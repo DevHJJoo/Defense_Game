@@ -23,6 +23,9 @@ private:
 	USkeletalMeshComponent*		m_TowerMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	USphereComponent*			m_DetectSphere;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int							m_iTowerLv;
 
 	UPROPERTY(VisibleAnywhere)
@@ -54,24 +57,28 @@ public:
 	void SetFire(bool _b) { m_bFire = _b; }
 	bool GetFire() { return m_bFire; }
 
+	void SetTowerInfo(const FTowerInfo& _info) { m_Info = _info; }
 	ETOWER_STATE GetState() { return m_eState; }
 	void ChangeState(ETOWER_STATE _eNextState);
 
 protected:
-	TArray<UAnimMontage*>	m_arrMontage;
-
-	void InitTowerMontage(const TCHAR* _strInstall, const TCHAR* _strAttack, const TCHAR* _strIdle, const TCHAR* _strRemove);
-	void ChangeTowerMontage(const TCHAR* _strInstall, const TCHAR* _strAttack, const TCHAR* _strIdle, const TCHAR* _strRemove);
-	void RemoveMontage() { m_arrMontage.Empty(); }
-public:
-	UMyAnimInstance* GetAnimInst() { return m_AnimInst; }
-
-protected:
+	const FTowerInfo& GetTowerInfo() { return m_Info; }
 	USkeletalMeshComponent* GetMesh() { return m_TowerMesh; }
-	void SetTowerLv(int _Lv) { m_iTowerLv = _Lv; }
+	USphereComponent* GetDetectSphere() { return m_DetectSphere; }
 	int GetTowerLv() { return m_iTowerLv; }
 	void SetTowerType(ETOWER_TYPE _TowerType) { m_eTowerType = _TowerType; }
 	ETOWER_TYPE GetTowerType() { return m_eTowerType; }
+
+	void SetDetectSphereSize(float _Size)
+	{
+		m_DetectSphere->SetSphereRadius(_Size);
+	}
+
+public:
+	void SetTowerLv(int _Lv) { m_iTowerLv = _Lv; }
+	
+public:
+	UMyAnimInstance* GetAnimInst() { return m_AnimInst; }
 
 public:
 	// Sets default values for this pawn's properties

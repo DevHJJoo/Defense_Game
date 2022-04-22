@@ -2,6 +2,7 @@
 
 
 #include "EffectMgr.h"
+
 #include "../Effect/MyEffect.h"
 
 UEffectMgr* UEffectMgr::m_This = nullptr;

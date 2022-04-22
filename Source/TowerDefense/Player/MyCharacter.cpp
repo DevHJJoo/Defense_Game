@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "MyCharacter.h"
 
 // Sets default values
@@ -17,7 +14,7 @@ AMyCharacter::AMyCharacter()
 	m_Arm->SetupAttachment(GetMesh());
 	m_Cam->SetupAttachment(m_Arm);
 
-	m_Arm->TargetArmLength = 1200.f;
+	m_Arm->TargetArmLength = 900.f;
 	m_Arm->bDoCollisionTest = false;
 }
 
@@ -55,12 +52,12 @@ void AMyCharacter::MoveSide(float _fScale)
 	AddMovementInput(GetActorRightVector(), _fScale);
 }
 
-#define MIN_ARM_LENGTH 800.f
-#define MAX_ARM_LENGTH 1200.f
+#define MIN_ARM_LENGTH 700.f
+#define MAX_ARM_LENGTH 900.f
 void AMyCharacter::Zoom(float _fScale)
 {
 	float fDT = GetWorld()->GetDeltaSeconds();
-	m_Arm->TargetArmLength += _fScale * 50.f;
+	m_Arm->TargetArmLength += _fScale * 20.f;
 
 	if (m_Arm->TargetArmLength > MAX_ARM_LENGTH)
 	{

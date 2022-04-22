@@ -1,13 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Cannon.h"
 
 #include "../Effect/MyEffect.h"
 #include "../Manager/EffectMgr.h"
 #include "../Projectile/Missile/Missile.h"
+#include "../MyGameInstance.h"
 
-// Sets default values
 ACannon::ACannon()
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -32,6 +29,8 @@ ACannon::ACannon()
 	SetTowerType(ETOWER_TYPE::CANNON);
 	ChangeState(ETOWER_STATE::INSTALL);
 
+	FTowerInfo info = {};
+
 	/*
 	반드시 테스트 후 이 변수는 지울 것.
 	*/
@@ -42,6 +41,26 @@ ACannon::ACannon()
 void ACannon::BeginPlay()
 {
 	Super::BeginPlay();
+
+	int CurLv = GetTowerLv();
+	switch (CurLv)
+	{
+	case 4:
+		SetTowerTable("CannonLv4");
+		break;
+	case 3:
+		SetTowerTable("CannonLv3");
+		break;
+	case 2:
+		SetTowerTable("CannonLv2");
+		break;
+	case 1:
+	default:
+		SetTowerTable("CannonLv1");
+		break;
+	}
+
+	SetDetectSphereSize(GetTowerInfo().fDetectRange);
 }
 
 // Called every frame
@@ -85,6 +104,19 @@ void ACannon::Fire()
 	}
 }
 
+void ACannon::SetTowerTable(const FString& _TowerStr)
+{
+	UMyGameInstance* pGameInst = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (nullptr != pGameInst)
+	{
+		const FTowerInfo* pTableRow = pGameInst->GetTowerInfo(_TowerStr);
+		if (nullptr != pTableRow)
+		{
+			SetTowerInfo(*pTableRow);
+		}
+	}
+}
+
 void ACannon::SpawnProjectile(FTransform _trans)
 {
 	Vec3 vPos = _trans.GetLocation();
@@ -106,6 +138,57 @@ void ACannon::SpawnProjectile(FTransform _trans)
 	pMissile->FinishSpawning(pMissile->GetTransform());
 }
 
+bool ACannon::ChangeTower(int _CurLv)
+{
+	if (4 == _CurLv)
+		return false;
+
+	FString TargetMeshStr;
+	FString TargetABPStr;
+
+	switch (_CurLv)
+	{
+	case 1:
+		{
+			TargetMeshStr = FString(TEXT("SkeletalMesh'/Game/FattyTurret/Cannon/Lv02/CannonLv2Mesh.CannonLv2Mesh'"));
+			TargetABPStr = FString(TEXT("AnimBlueprint'/Game/BlueprintClass/Tower/Cannon/ABP_CannonLv2.ABP_CannonLv2'"));
+		}
+		break;
+	case 2:
+		{
+			TargetMeshStr = FString(TEXT("SkeletalMesh'/Game/FattyTurret/Cannon/Lv03/CannonLv3Mesh.CannonLv3Mesh'"));
+			TargetABPStr = FString(TEXT("AnimBlueprint'/Game/BlueprintClass/Tower/Cannon/ABP_CannonLv3.ABP_CannonLv3'"));
+		}
+
+		break;
+	case 3:
+		{
+			TargetMeshStr = FString(TEXT("SkeletalMesh'/Game/FattyTurret/Cannon/Lv04/CannonLv4Mesh.CannonLv4Mesh'"));
+			TargetABPStr = FString(TEXT("AnimBlueprint'/Game/BlueprintClass/Tower/Cannon/ABP_CannonLv4.ABP_CannonLv4'"));
+		}
+		break;
+	default:
+		break;
+	}
+
+	USkeletalMesh* CannonMesh = LoadObject<USkeletalMesh>(NULL, *TargetMeshStr);
+	UAnimBlueprint* CannonABP = LoadObject<UAnimBlueprint>(NULL, *TargetABPStr);
+
+	if (nullptr != CannonMesh
+		&& nullptr != CannonABP)
+	{
+		GetMesh()->SetAnimInstanceClass(nullptr);
+		GetMesh()->SetSkeletalMesh(CannonMesh);
+		GetMesh()->SetAnimInstanceClass(CannonABP->GeneratedClass);
+	}
+	else
+	{
+		return false;
+	}
+
+	return true;
+}
+
 void ACannon::DestroyProcess()
 {
 	Destroy();
@@ -113,7 +196,27 @@ void ACannon::DestroyProcess()
 
 void ACannon::Install()
 {
-	// Info 구조체를 설정할 것?
+	int CurLv = GetTowerLv();
+	switch (CurLv)
+	{
+	case 4:
+		ChangeTower(CurLv);
+		SetTowerTable("CannonLv4");
+		break;
+	case 3:
+		ChangeTower(CurLv);
+		SetTowerTable("CannonLv3");
+		break;
+	case 2:
+		ChangeTower(CurLv);
+		SetTowerTable("CannonLv2");
+		break;
+	case 1:
+	default:
+		break;
+	}
+
+	SetDetectSphereSize(GetTowerInfo().fDetectRange);
 }
 
 void ACannon::Idle()
@@ -136,59 +239,16 @@ void ACannon::Upgrade()
 		return;
 	}
 
+	int CurLv = GetTowerLv();
+
 	ETOWER_STATE eState = GetState();
 
 	if(ETOWER_STATE::NEEDUPGRADE != eState)
 		return;
 
-	int CurLv = GetTowerLv();
-	FString TargetMeshStr;
-	FString TargetABPStr;
-
-	switch (CurLv)
-	{
-	case 1:
-		{
-			TargetMeshStr = FString(TEXT("SkeletalMesh'/Game/FattyTurret/Cannon/Lv02/CannonLv2Mesh.CannonLv2Mesh'"));
-			TargetABPStr = FString(TEXT("AnimBlueprint'/Game/BlueprintClass/Tower/Cannon/ABP_CannonLv2.ABP_CannonLv2'"));			
-		}
-		break;
-	case 2:
-	{
-		TargetMeshStr = FString(TEXT("SkeletalMesh'/Game/FattyTurret/Cannon/Lv03/CannonLv3Mesh.CannonLv3Mesh'"));
-		TargetABPStr = FString(TEXT("AnimBlueprint'/Game/BlueprintClass/Tower/Cannon/ABP_CannonLv3.ABP_CannonLv3'"));
-	}
-		
-		break;
-	case 3:
-	{
-		TargetMeshStr = FString(TEXT("SkeletalMesh'/Game/FattyTurret/Cannon/Lv04/CannonLv4Mesh.CannonLv4Mesh'"));
-		TargetABPStr = FString(TEXT("AnimBlueprint'/Game/BlueprintClass/Tower/Cannon/ABP_CannonLv4.ABP_CannonLv4'"));
-	}		
-		break;
-	case 4:
-		return;
-		break;
-	default:
-		break;
-	}
-
-	USkeletalMesh* CannonMesh = LoadObject<USkeletalMesh>(NULL, *TargetMeshStr);
-	UAnimBlueprint* CannonABP = LoadObject<UAnimBlueprint>(NULL, *TargetABPStr);
-	
-	if (nullptr != CannonMesh
-		&& nullptr != CannonABP)
-	{
-		RemoveMontage();
-		GetMesh()->SetAnimInstanceClass(nullptr);
-		GetMesh()->SetSkeletalMesh(CannonMesh);
-		GetMesh()->SetAnimInstanceClass(CannonABP->GeneratedClass);
-
-		SetTowerLv(CurLv + 1);
-
-		SetUpgrade(false);
-		ChangeState(ETOWER_STATE::INSTALL);		
-	}
+	SetTowerLv(++CurLv);
+	SetUpgrade(false);
+	ChangeState(ETOWER_STATE::INSTALL);
 }
 
 void ACannon::RemoveWithUpgarde()

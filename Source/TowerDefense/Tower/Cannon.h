@@ -41,7 +41,9 @@ public:
 	virtual void DestroyProcess() override;
 
 private:
+	void SetTowerTable(const FString& _TowerStr);
 	void SpawnProjectile(FTransform _trans);
+	bool ChangeTower(int _CurLv);
 
 protected:
 	virtual void Install() override;
