@@ -1,6 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
+
+#include <BehaviorTree/BehaviorTree.h>
+#include <BehaviorTree/BlackboardData.h>
 
 #include "../global.h"
 
@@ -11,7 +12,7 @@
 class UMyAnimInstance;
 
 UCLASS()
-class TOWERDEFENSE_API AMyTower : public AActor
+class TOWERDEFENSE_API AMyTower : public APawn
 {
 	GENERATED_BODY()
 
@@ -24,6 +25,13 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	USphereComponent*			m_DetectSphere;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UBehaviorTree* m_BehaviorTree;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UBlackboardData* m_Blackboard;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int							m_iTowerLv;
@@ -50,34 +58,42 @@ protected:
 	ETOWER_TYPE					m_eTowerType;
 
 public:
+	UBehaviorTree* GetBehaviorTree() { return m_BehaviorTree; }
+	UBlackboardData* GetBlackboard() { return m_Blackboard; }
+
 	void SetUpgrade(bool _b) { m_bIsNeedToUpgrade = _b; }
 	bool IsNeedToUpgrade() { return m_bIsNeedToUpgrade; }
-	void SetDirection(float _f) { m_fDirection = _f; }
-	float GetDirection() { return m_fDirection; }
-	void SetFire(bool _b) { m_bFire = _b; }
-	bool GetFire() { return m_bFire; }
 
 	void SetTowerInfo(const FTowerInfo& _info) { m_Info = _info; }
 	ETOWER_STATE GetState() { return m_eState; }
 	void ChangeState(ETOWER_STATE _eNextState);
 
-protected:
-	const FTowerInfo& GetTowerInfo() { return m_Info; }
-	USkeletalMeshComponent* GetMesh() { return m_TowerMesh; }
-	USphereComponent* GetDetectSphere() { return m_DetectSphere; }
-	int GetTowerLv() { return m_iTowerLv; }
-	void SetTowerType(ETOWER_TYPE _TowerType) { m_eTowerType = _TowerType; }
-	ETOWER_TYPE GetTowerType() { return m_eTowerType; }
+	void SetDirection(float _f) { m_fDirection = _f; }
+	float GetDirection() { return m_fDirection; }
+	
+	void SetFire(bool _b) { m_bFire = _b; }
+	bool GetFire() { return m_bFire; }
 
+protected:
+	void SetBehaviorTree(UBehaviorTree* _Tree) { m_BehaviorTree = _Tree; }
+	void SetBlackboard(UBlackboardData* _board) { m_Blackboard = _board; }
+
+	void SetTowerType(ETOWER_TYPE _TowerType) { m_eTowerType = _TowerType; }
 	void SetDetectSphereSize(float _Size)
 	{
 		m_DetectSphere->SetSphereRadius(_Size);
 	}
 
+	USkeletalMeshComponent* GetMesh() { return m_TowerMesh; }
+
+	int GetTowerLv() { return m_iTowerLv; }
+	ETOWER_TYPE GetTowerType() { return m_eTowerType; }
+
 public:
+	USphereComponent* GetDetectSphere() { return m_DetectSphere; }
+	const FTowerInfo& GetTowerInfo() { return m_Info; }
 	void SetTowerLv(int _Lv) { m_iTowerLv = _Lv; }
-	
-public:
+
 	UMyAnimInstance* GetAnimInst() { return m_AnimInst; }
 
 public:

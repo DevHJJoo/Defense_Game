@@ -1,5 +1,6 @@
 #include "MyTower.h"
 
+#include "AI/TowerAIController.h"
 #include "../MyAnimInstance.h"
 #include "../Monster/Monster.h"
 
@@ -20,6 +21,26 @@ AMyTower::AMyTower()
 	m_DetectSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectSphere"));
 	m_DetectSphere->SetupAttachment(m_Root);
 	m_DetectSphere->SetCollisionProfileName(TEXT("TowerType"));
+
+	// 사용 할 AIController 클래스 지정
+	AIControllerClass = ATowerAIController::StaticClass();
+
+	// AIController 빙의 방식 설정
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	// 사용 할 행동트리
+	ConstructorHelpers::FObjectFinder<UBehaviorTree> BT(TEXT("BehaviorTree'/Game/BlueprintClass/Tower/AI/BT_Tower.BT_Tower'"));
+	if (BT.Succeeded())
+	{
+		SetBehaviorTree(BT.Object);
+	}
+	// 사용 할 블랙보드
+	ConstructorHelpers::FObjectFinder<UBlackboardData> BB(TEXT("BlackboardData'/Game/BlueprintClass/Tower/AI/BB_Tower.BB_Tower'"));
+
+	if (BB.Succeeded())
+	{
+		SetBlackboard(BB.Object);
+	}
 }
 
 void AMyTower::ChangeState(ETOWER_STATE _eNextState)
@@ -80,7 +101,7 @@ void AMyTower::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	TArray<AActor*> TargetList;
+	//TArray<AActor*> TargetList;
 
 	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMonster::StaticClass(), TargetList);
 	/*for (AActor* TargetList : TargetList)

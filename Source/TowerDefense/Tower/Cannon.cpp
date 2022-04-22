@@ -31,6 +31,7 @@ ACannon::ACannon()
 
 	FTowerInfo info = {};
 
+
 	/*
 	반드시 테스트 후 이 변수는 지울 것.
 	*/
@@ -120,6 +121,7 @@ void ACannon::SetTowerTable(const FString& _TowerStr)
 void ACannon::SpawnProjectile(FTransform _trans)
 {
 	Vec3 vPos = _trans.GetLocation();
+	//vPos.Z -= 20.f;
 	Vec3 vForward = _trans.GetRotation().Rotator().Vector();
 
 	FActorSpawnParameters SpawnParam = {};
@@ -131,7 +133,7 @@ void ACannon::SpawnProjectile(FTransform _trans)
 	SpawnParam.bDeferConstruction = true;
 
 	AMissile* pMissile = GetWorld()->SpawnActor<AMissile>(m_Projectile
-		, vPos + vForward * 50.f
+		, vPos
 		, vForward.Rotation(), SpawnParam);
 
 	// BeginPlay 호출
@@ -140,9 +142,6 @@ void ACannon::SpawnProjectile(FTransform _trans)
 
 bool ACannon::ChangeTower(int _CurLv)
 {
-	if (4 == _CurLv)
-		return false;
-
 	FString TargetMeshStr;
 	FString TargetABPStr;
 
@@ -150,23 +149,28 @@ bool ACannon::ChangeTower(int _CurLv)
 	{
 	case 1:
 		{
-			TargetMeshStr = FString(TEXT("SkeletalMesh'/Game/FattyTurret/Cannon/Lv02/CannonLv2Mesh.CannonLv2Mesh'"));
-			TargetABPStr = FString(TEXT("AnimBlueprint'/Game/BlueprintClass/Tower/Cannon/ABP_CannonLv2.ABP_CannonLv2'"));
+			TargetMeshStr = FString(TEXT("SkeletalMesh'/Game/FattyTurret/Cannon/Lv01/CannonLv1Mesh.CannonLv1Mesh'"));
+			TargetABPStr = FString(TEXT("AnimBlueprint'/Game/BlueprintClass/Tower/Cannon/ABP_CannonLv1.ABP_CannonLv1'"));
 		}
 		break;
 	case 2:
 		{
-			TargetMeshStr = FString(TEXT("SkeletalMesh'/Game/FattyTurret/Cannon/Lv03/CannonLv3Mesh.CannonLv3Mesh'"));
-			TargetABPStr = FString(TEXT("AnimBlueprint'/Game/BlueprintClass/Tower/Cannon/ABP_CannonLv3.ABP_CannonLv3'"));
+			TargetMeshStr = FString(TEXT("SkeletalMesh'/Game/FattyTurret/Cannon/Lv02/CannonLv2Mesh.CannonLv2Mesh'"));
+			TargetABPStr = FString(TEXT("AnimBlueprint'/Game/BlueprintClass/Tower/Cannon/ABP_CannonLv2.ABP_CannonLv2'"));
 		}
 
 		break;
 	case 3:
 		{
-			TargetMeshStr = FString(TEXT("SkeletalMesh'/Game/FattyTurret/Cannon/Lv04/CannonLv4Mesh.CannonLv4Mesh'"));
-			TargetABPStr = FString(TEXT("AnimBlueprint'/Game/BlueprintClass/Tower/Cannon/ABP_CannonLv4.ABP_CannonLv4'"));
+			TargetMeshStr = FString(TEXT("SkeletalMesh'/Game/FattyTurret/Cannon/Lv03/CannonLv3Mesh.CannonLv3Mesh'"));
+			TargetABPStr = FString(TEXT("AnimBlueprint'/Game/BlueprintClass/Tower/Cannon/ABP_CannonLv3.ABP_CannonLv3'"));
 		}
 		break;
+	case 4:
+		{
+			TargetMeshStr = FString(TEXT("SkeletalMesh'/Game/FattyTurret/Cannon/Lv04/CannonLv4Mesh.CannonLv4Mesh'"));
+			TargetABPStr = FString(TEXT("AnimBlueprint'/Game/BlueprintClass/Tower/Cannon/ABP_CannonLv4.ABP_CannonLv4'"));		
+		}
 	default:
 		break;
 	}
