@@ -21,12 +21,29 @@ AMonster::AMonster()
 	m_Info = {};
 }
 
+Vec3 AMonster::GetNextPatrolPos()
+{
+	if (m_PatrolPoints.Num() == 0)
+	{
+		return GetActorLocation();
+	}
+
+	++m_NextPatrolIdx;
+	if (m_PatrolPoints.Num() <= m_NextPatrolIdx)
+	{
+		m_NextPatrolIdx = 0;
+	}
+
+	return m_PatrolPoints[m_NextPatrolIdx];
+}
+
 // Called when the game starts or when spawned
 void AMonster::BeginPlay()
 {
 	Super::BeginPlay();
 
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AMonster::OnBeginOverlap);
+	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AMonster::OnHit);
 }
 
 // Called every frame
@@ -43,6 +60,11 @@ void AMonster::Tick(float DeltaTime)
 }
 
 void AMonster::OnBeginOverlap(UPrimitiveComponent* _PrimitiveComponent, AActor* _OtherActor, UPrimitiveComponent* _OtherComp, int32 _OtherBodyIndex, bool _bFromSweep, const FHitResult& _SweepResult)
+{
+
+}
+
+void AMonster::OnHit(UPrimitiveComponent* _HitComponent, AActor* _OtherActor, UPrimitiveComponent* _OtherComp, FVector _NormalImpulse, const FHitResult& Hit)
 {
 
 }

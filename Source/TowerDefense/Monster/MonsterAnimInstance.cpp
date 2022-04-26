@@ -30,3 +30,15 @@ void UMonsterAnimInstance::NativeUpdateAnimation(float _fDT)
 	}
 	
 }
+
+void UMonsterAnimInstance::AnimNotify_NormalMon_HitEnd()
+{
+	AMonster* pMonster = Cast<AMonster>(GetOwningActor());
+
+	if (nullptr != pMonster)
+	{
+		// 히트 모션에 의한 경직을 풀어 줌
+		pMonster->SetUnStopable(false);
+		pMonster->ChangeState(EMON_STATE::MOVE);
+	}
+}

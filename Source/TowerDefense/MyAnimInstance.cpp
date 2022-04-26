@@ -24,6 +24,7 @@ void UMyAnimInstance::NativeUpdateAnimation(float _fDT)
 	{
 		m_fDirection = pTower->GetDirection();
 		m_eState = pTower->GetState();
+		m_fAttackSpeed = pTower->GetAttackSpeed();
 	}
 }
 

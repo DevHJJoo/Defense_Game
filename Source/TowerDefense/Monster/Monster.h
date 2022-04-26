@@ -45,7 +45,7 @@ public:
 	UBehaviorTree* GetBehaviorTree() { return m_BehaviorTree; }
 	UBlackboardData* GetBlackboard() { return m_Blackboard; }
 	//UWidgetComponent* GetWidgetComponent() { return m_WidgetComponent; }
-	//Vec3 GetNextPatrolPos();
+	Vec3 GetNextPatrolPos();
 
 protected:
 	void SetMonInfo(const FMonInfo& _info) { m_Info = _info; }
@@ -76,4 +76,7 @@ public:
 public:
 	UFUNCTION()
 	virtual void OnBeginOverlap(UPrimitiveComponent* _PrimitiveComponent, AActor* _OtherActor, UPrimitiveComponent* _OtherComp, int32 _OtherBodyIndex, bool _bFromSweep, const FHitResult& _SweepResult);
+
+	UFUNCTION()
+	virtual void OnHit(UPrimitiveComponent* _HitComponent, AActor* _OtherActor, UPrimitiveComponent* _OtherComp, FVector _NormalImpulse, const FHitResult& Hit);
 };

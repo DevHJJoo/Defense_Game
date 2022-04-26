@@ -11,6 +11,7 @@ class TOWERDEFENSE_API ANormal_Rat : public AMonster
 {
 	GENERATED_BODY()
 
+public:
 	ANormal_Rat();
 
 public:
@@ -27,4 +28,5 @@ public:
 	// 충돌 알림 함수
 public:
 	virtual void OnBeginOverlap(UPrimitiveComponent* _PrimitiveComponent, AActor* _OtherActor, UPrimitiveComponent* _OtherComp, int32 _OtherBodyIndex, bool _bFromSweep, const FHitResult& _SweepResult) override;
+	virtual void OnHit(UPrimitiveComponent* _HitComponent, AActor* _OtherActor, UPrimitiveComponent* _OtherComp, FVector _NormalImpulse, const FHitResult& Hit) override;
 };

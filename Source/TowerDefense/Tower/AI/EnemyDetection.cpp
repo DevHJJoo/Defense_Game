@@ -28,6 +28,11 @@ void UEnemyDetection::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 	if (nullptr == pTower)
 		return;
 
+	if (m_fPrevTargetDist == 0.f)
+		m_fPrevTargetDist = pTower->GetTowerInfo().fDetectRange;
+
+	pController->GetBlackboardComponent()->SetValueAsBool(TEXT("AttackEnable"), pTower->GetAttackEnable());
+
 	USphereComponent* pSphere = pTower->GetDetectSphere();
 	if (nullptr == pSphere)
 		return;
@@ -42,14 +47,13 @@ void UEnemyDetection::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 
 	if (nullptr == m_pTarget)
 	{
-		float fDetectRange = pTower->GetTowerInfo().fDetectRange;
-		float fPrevTargetDist = fDetectRange;
-
 		for (AActor* TargetIter : OverlapList)
 		{
-			static float fCheckDist = Vec3::Distance(vTowerPos, TargetIter->GetActorLocation());
-			if (fCheckDist < fPrevTargetDist)
+			float fCheckDist = Vec3::Distance(vTowerPos, TargetIter->GetActorLocation());
+			if (fCheckDist <= m_fPrevTargetDist)
 			{
+				m_fPrevTargetDist = fCheckDist;
+
 				m_pTarget = Cast<AMonster>(TargetIter);
 				if (nullptr == m_pTarget)
 				{
@@ -63,19 +67,11 @@ void UEnemyDetection::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 	}
 	else
 	{
-		if (pSphere->IsOverlappingActor(m_pTarget))
-		{
-			Vec3 vTargetDir = m_pTarget->GetActorLocation() - vTowerPos;
-			vTargetDir.Z = 0.f;
-			vTargetDir.Normalize();
-
-			FRotator fRot = FRotationMatrix::MakeFromX(vTargetDir).Rotator();
-			pTower->SetDirection(fRot.Yaw);
-		}
-		else
+		if (false == pSphere->IsOverlappingActor(m_pTarget))
 		{
 			m_pTarget = nullptr;
-			pController->GetBlackboardComponent()->ClearValue(TEXT("Target"));
+			m_fPrevTargetDist = 400.f;
+			pController->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), nullptr);
 		}
 	}
 	

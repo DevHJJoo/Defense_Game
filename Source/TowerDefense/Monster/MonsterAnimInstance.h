@@ -26,4 +26,7 @@ public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeBeginPlay() override;
 	virtual void NativeUpdateAnimation(float _fDT) override;
+
+	UFUNCTION()
+	void AnimNotify_NormalMon_HitEnd();
 };

@@ -7,7 +7,11 @@
 // Sets default values
 AMyTower::AMyTower()
 	: m_bIsNeedToUpgrade(false)
+	, m_bAttackEnable(true)
+	, m_fAttackInterval(0.f)
+	, m_fRemainInterval(0.f)
 	, m_eState(ETOWER_STATE::IDLE)
+	, m_Info{}
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -64,7 +68,11 @@ void AMyTower::ChangeState(ETOWER_STATE _eNextState)
 		break;
 	case ETOWER_STATE::ATTACK:
 	{
-		Attack();
+		if (m_bAttackEnable)
+		{
+			Attack();
+			m_bAttackEnable = false;
+		}
 	}
 		break;
 	case ETOWER_STATE::NEEDUPGRADE:
@@ -101,38 +109,14 @@ void AMyTower::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//TArray<AActor*> TargetList;
-
-	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMonster::StaticClass(), TargetList);
-	/*for (AActor* TargetList : TargetList)
+	if (false == m_bAttackEnable)
 	{
-		TargetList.
+		m_fRemainInterval -= DeltaTime;
+
+		if (m_fRemainInterval <= 0.f)
+		{
+			m_fRemainInterval = m_fAttackInterval;
+			m_bAttackEnable = true;
+		}
 	}
-	if (nullptr != TargetList)
-	{
-		Vec3 vTowerPos = GetActorLocation();
-		float fDistance = Vec3::Distance(vTowerPos, pPlayer->GetActorLocation());
-		
-		if (fDistance < 600.f)
-		{
-			Vec3 vTargetDir = pPlayer->GetActorLocation() - vTowerPos;
-			vTargetDir.Z = 0.f;
-			vTargetDir.Normalize();
-
-			FRotator fRot = FRotationMatrix::MakeFromX(vTargetDir).Rotator();
-
-			m_fDirection = fRot.Yaw;
-		}
-		else
-		{
-			m_fDirection += DeltaTime * 40.f;
-			if (m_fDirection >= 360.f)
-				m_fDirection = 0.f;
-		}
-	}*/
-	
-	
-	/*m_fDirection += DeltaTime * 40.f;
-	if (m_fDirection >= 360.f)
-		m_fDirection = 0.f;*/
 }

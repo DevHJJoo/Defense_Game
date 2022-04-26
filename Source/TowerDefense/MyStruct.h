@@ -58,7 +58,7 @@ struct FTowerInfo
 	uint8	uLv;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Info, meta = (AllowPrivateAccess = "true"))
-	float	fAttackSpeed;
+	int		iAttackCount;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Info, meta = (AllowPrivateAccess = "true"))
 	float	fDetectRange;
@@ -114,4 +114,23 @@ struct FMonInfo
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int		iGold;
+};
+
+USTRUCT(Atomic, BlueprintType)
+struct FSpawnInfo
+	: public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	uint8	uRound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FString SpawnTargetName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	uint8	uSpawnNum;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float	fSpawnInterval;
 };

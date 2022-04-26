@@ -29,13 +29,7 @@ ACannon::ACannon()
 	SetTowerType(ETOWER_TYPE::CANNON);
 	ChangeState(ETOWER_STATE::INSTALL);
 
-	FTowerInfo info = {};
-
-
-	/*
-	반드시 테스트 후 이 변수는 지울 것.
-	*/
-	m_fAttackInterval = 0.f;
+	SetAttackInterval(GetTowerInfo().iAttackCount);
 }
 
 // Called when the game starts or when spawned
@@ -43,7 +37,7 @@ void ACannon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	int CurLv = GetTowerLv();
+	uint8 CurLv = GetTowerLv();
 	switch (CurLv)
 	{
 	case 4:
@@ -60,7 +54,7 @@ void ACannon::BeginPlay()
 		SetTowerTable("CannonLv1");
 		break;
 	}
-
+	SetAttackInterval(GetTowerInfo().iAttackCount);
 	SetDetectSphereSize(GetTowerInfo().fDetectRange);
 }
 
@@ -73,13 +67,6 @@ void ACannon::Tick(float DeltaTime)
 	{
 		Upgrade();
 	}
-
-	m_fAttackInterval += DeltaTime;
-	if (m_fAttackInterval >= 3.0)
-	{
-		m_fAttackInterval = 0.f;
-		ChangeState(ETOWER_STATE::ATTACK);
-	}
 }
 
 void ACannon::Fire()
@@ -89,11 +76,11 @@ void ACannon::Fire()
 
 	Vec3 vScale = Vec3(3.f);
 	tEffectTrans.SetScale3D(vScale);
-
+	
 	UEffectMgr::GetInst(GetWorld())->CreateEffect(EEFFECT_TYPE::MUZZLEFLASH, tEffectTrans, GetLevel());
 	ACannon::SpawnProjectile(tEffectTrans);
 
-	if (4 == GetTowerLv())
+	if ((uint8)4 == GetTowerLv())
 	{
 		fnSocket = FName(TEXT("Bone_002socket1"));
 		tEffectTrans = GetMesh()->GetSocketTransform(fnSocket);
@@ -121,7 +108,7 @@ void ACannon::SetTowerTable(const FString& _TowerStr)
 void ACannon::SpawnProjectile(FTransform _trans)
 {
 	Vec3 vPos = _trans.GetLocation();
-	//vPos.Z -= 20.f;
+	vPos.Z -= 20.f;
 	Vec3 vForward = _trans.GetRotation().Rotator().Vector();
 
 	FActorSpawnParameters SpawnParam = {};
@@ -200,7 +187,7 @@ void ACannon::DestroyProcess()
 
 void ACannon::Install()
 {
-	int CurLv = GetTowerLv();
+	uint8 CurLv = GetTowerLv();
 	switch (CurLv)
 	{
 	case 4:
@@ -220,6 +207,7 @@ void ACannon::Install()
 		break;
 	}
 
+	SetAttackInterval(GetTowerInfo().iAttackCount);
 	SetDetectSphereSize(GetTowerInfo().fDetectRange);
 }
 
@@ -229,6 +217,7 @@ void ACannon::Idle()
 
 void ACannon::Attack()
 {
+	
 }
 
 void ACannon::NeedUpgrade()
@@ -243,7 +232,7 @@ void ACannon::Upgrade()
 		return;
 	}
 
-	int CurLv = GetTowerLv();
+	uint8 CurLv = GetTowerLv();
 
 	ETOWER_STATE eState = GetState();
 
@@ -257,13 +246,9 @@ void ACannon::Upgrade()
 
 void ACannon::RemoveWithUpgarde()
 {
-	/*if (nullptr != m_arrMontage[ETOWER_MONTAGE::REMOVE])
-		GetAnimInst()->Montage_Play(m_arrMontage[ETOWER_MONTAGE::REMOVE]);*/
 }
 
 void ACannon::Remove()
 {
-	/*if (nullptr != m_arrMontage[ETOWER_MONTAGE::REMOVE])
-		GetAnimInst()->Montage_Play(m_arrMontage[ETOWER_MONTAGE::REMOVE]);*/
 }
 

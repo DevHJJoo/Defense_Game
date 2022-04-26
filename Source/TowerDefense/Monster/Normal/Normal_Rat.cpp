@@ -36,7 +36,36 @@ ANormal_Rat::ANormal_Rat()
 
 bool ANormal_Rat::ChangeState(EMON_STATE _eNextState)
 {
-	return false;
+	if (EMON_STATE::HIT == _eNextState)
+	{
+		SetUnStopable(false);
+	}
+
+
+	EMON_STATE eCurState = GetState();
+	if (IsUnStopable() || eCurState == _eNextState)
+		return false;
+
+	SetState(_eNextState);
+
+	switch (GetState())
+	{
+	case EMON_STATE::IDLE:
+		SetState(EMON_STATE::MOVE);
+		break;
+	case EMON_STATE::MOVE:
+		break;
+	case EMON_STATE::HIT:
+		break;
+	case EMON_STATE::DEAD:
+		GetMovementComponent()->StopMovementImmediately();
+		SetUnStopable(true);
+		break;
+	default:
+		break;
+	}
+
+	return true;
 }
 
 void ANormal_Rat::BeginPlay()
@@ -53,6 +82,7 @@ void ANormal_Rat::BeginPlay()
 		}
 	}
 
+	SetState(EMON_STATE::MOVE);
 }
 
 void ANormal_Rat::Tick(float DeltaTime)
@@ -64,4 +94,25 @@ void ANormal_Rat::Tick(float DeltaTime)
 
 void ANormal_Rat::OnBeginOverlap(UPrimitiveComponent* _PrimitiveComponent, AActor* _OtherActor, UPrimitiveComponent* _OtherComp, int32 _OtherBodyIndex, bool _bFromSweep, const FHitResult& _SweepResult)
 {
+	if (ECC_GameTraceChannel4 == _OtherComp->GetCollisionObjectType())
+	{
+		LOG(Warning, "MonsterHit");
+		ChangeState(EMON_STATE::HIT);
+		FMonInfo info = GetMonInfo();
+		info.fCurHP -= 10.f;
+		SetMonInfo(info);
+	}
+}
+
+
+void ANormal_Rat::OnHit(UPrimitiveComponent* _HitComponent, AActor* _OtherActor, UPrimitiveComponent* _OtherComp, FVector _NormalImpulse, const FHitResult& Hit)
+{
+	if (ECC_GameTraceChannel4 == _OtherComp->GetCollisionObjectType())
+	{
+		LOG(Warning, "MonsterHit");
+		ChangeState(EMON_STATE::HIT);
+		FMonInfo info = GetMonInfo();
+		info.fCurHP -= 10.f;
+		SetMonInfo(info);
+	}
 }

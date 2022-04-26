@@ -27,14 +27,10 @@ private:
 	USphereComponent*			m_DetectSphere;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	UBehaviorTree* m_BehaviorTree;
+	UBehaviorTree*				m_BehaviorTree;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	UBlackboardData* m_Blackboard;
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	int							m_iTowerLv;
+	UBlackboardData*			m_Blackboard;
 
 	UPROPERTY(VisibleAnywhere)
 	bool						m_bIsNeedToUpgrade;
@@ -46,7 +42,9 @@ private:
 
 	UMyAnimInstance*			m_AnimInst;
 
-	bool						m_bFire;
+	bool						m_bAttackEnable;
+	float						m_fAttackInterval;
+	float						m_fRemainInterval;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	ETOWER_STATE				m_eState;
@@ -70,9 +68,12 @@ public:
 
 	void SetDirection(float _f) { m_fDirection = _f; }
 	float GetDirection() { return m_fDirection; }
-	
-	void SetFire(bool _b) { m_bFire = _b; }
-	bool GetFire() { return m_bFire; }
+
+	void SetAttackEnable(bool _b) { m_bAttackEnable = _b; }
+	bool GetAttackEnable() { return m_bAttackEnable; }
+
+	float GetAttackInterval() { return m_fAttackInterval; }
+	float GetAttackSpeed() { return m_Info.iAttackCount; }
 
 protected:
 	void SetBehaviorTree(UBehaviorTree* _Tree) { m_BehaviorTree = _Tree; }
@@ -86,13 +87,24 @@ protected:
 
 	USkeletalMeshComponent* GetMesh() { return m_TowerMesh; }
 
-	int GetTowerLv() { return m_iTowerLv; }
+	uint8 GetTowerLv() { return m_Info.uLv; }
 	ETOWER_TYPE GetTowerType() { return m_eTowerType; }
 
+	void SetAttackInterval(int _iAttackCount)
+	{
+		if (0 == _iAttackCount)
+		{
+			m_fAttackInterval = 10.f;
+		}
+		else
+		{
+			m_fAttackInterval = 1.f / (float)_iAttackCount;
+		}
+	}
 public:
 	USphereComponent* GetDetectSphere() { return m_DetectSphere; }
 	const FTowerInfo& GetTowerInfo() { return m_Info; }
-	void SetTowerLv(int _Lv) { m_iTowerLv = _Lv; }
+	void SetTowerLv(uint8 _uLv) { m_Info.uLv = _uLv; }
 
 	UMyAnimInstance* GetAnimInst() { return m_AnimInst; }
 
