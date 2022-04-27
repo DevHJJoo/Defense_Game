@@ -20,5 +20,5 @@ public:
 
 public:
 	virtual void OnPossess(APawn* _mon) override;
-
+	virtual void OnUnPossess() override;
 };

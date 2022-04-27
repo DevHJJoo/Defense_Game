@@ -47,6 +47,11 @@ bool UIsWithinRange::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerCom
 
 			bReturn = true;
 		}
+		else
+		{
+			pController->GetBlackboardComponent()->ClearValue(TEXT("Target"));
+			bReturn = false;
+		}
 	}
 	else if (ERANGE_TYPE::ATTACK == m_Type)
 	{
@@ -60,6 +65,11 @@ bool UIsWithinRange::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerCom
 			pTower->SetDirection(fRot.Yaw);
 
 			bReturn = true;
+		}
+		else
+		{
+			pController->GetBlackboardComponent()->ClearValue(TEXT("Target"));
+			bReturn = false;
 		}
 	}
 

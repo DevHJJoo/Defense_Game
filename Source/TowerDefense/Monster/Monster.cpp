@@ -1,6 +1,7 @@
 #include "Monster.h"
 
 #include "AI/MonAIController.h"
+
 // Sets default values
 AMonster::AMonster()
 	: m_eState(EMON_STATE::IDLE)
@@ -31,7 +32,7 @@ Vec3 AMonster::GetNextPatrolPos()
 	++m_NextPatrolIdx;
 	if (m_PatrolPoints.Num() <= m_NextPatrolIdx)
 	{
-		m_NextPatrolIdx = 0;
+		m_NextPatrolIdx = m_PatrolPoints.Num() - 1;
 	}
 
 	return m_PatrolPoints[m_NextPatrolIdx];
@@ -53,10 +54,14 @@ void AMonster::Tick(float DeltaTime)
 
 	if (m_PrevHP != m_Info.fCurHP)
 	{
-
 	}
 
 	m_PrevHP = m_Info.fCurHP;
+
+	if (0.f >= m_Info.fCurHP)
+	{
+		ChangeState(EMON_STATE::DEAD);
+	}
 }
 
 void AMonster::OnBeginOverlap(UPrimitiveComponent* _PrimitiveComponent, AActor* _OtherActor, UPrimitiveComponent* _OtherComp, int32 _OtherBodyIndex, bool _bFromSweep, const FHitResult& _SweepResult)

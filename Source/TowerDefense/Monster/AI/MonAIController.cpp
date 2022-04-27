@@ -12,11 +12,20 @@ AMonAIController::AMonAIController()
 
 void AMonAIController::OnPossess(APawn* _mon)
 {
+	AAIController::OnPossess(_mon);
+
 	AMonster* pMonster = Cast<AMonster>(_mon);
 
 	if (nullptr != pMonster)
 	{
 		m_BehaviorTree = pMonster->GetBehaviorTree();
 		m_Blackboard = pMonster->GetBlackboard();
+
+		UseBlackboard(m_Blackboard, Blackboard);
+		RunBehaviorTree(m_BehaviorTree);
 	}
+}
+
+void AMonAIController::OnUnPossess()
+{
 }

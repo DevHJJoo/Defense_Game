@@ -15,6 +15,8 @@ ASpawnPoint::ASpawnPoint()
 	m_StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	SetRootComponent(m_StaticMeshComponent);
 
+	m_StaticMeshComponent->SetCollisionProfileName(TEXT("SpawnArea"));
+
 	ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMesh(TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'"));
 	if (SphereMesh.Succeeded())
 	{
@@ -44,34 +46,41 @@ void ASpawnPoint::Tick(float DeltaTime)
 			m_fSpawnTimeRemain = m_SpawnInfo.fSpawnInterval;
 
 			ASpawnPoint::Spawn();
-			++m_uCurSpawnCount;
 		}
 	}
 }
 
 void ASpawnPoint::Spawn()
 {
+	if (nullptr == m_SpawnType || m_bIsSpawnUse)
+	{
+		return;
+	}
+
 	FActorSpawnParameters SpawnParam = {};
 	SpawnParam.OverrideLevel = GetLevel();
 	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SpawnParam.bDeferConstruction = true;
 
-	Vec3 vSpawnPointLocation = GetActorLocation();
-	vSpawnPointLocation.Z = 0.f;
+	Vec3 vSpawnPointLocation = GetActorLocation();	
+	vSpawnPointLocation.Z = 109.f;
 
 	Vec3 vDir = Vec3(0.f);
 
 	AMonster* pMonster = GetWorld()->SpawnActor<AMonster>(m_SpawnType, FTransform(vDir.Rotation(), vSpawnPointLocation), SpawnParam);
 
-	//// 초기화 관련 호출
-	//// 몬스터가 순찰해야 하는 포인트들을 알려 줌	
-	//for (int j = 0; j < m_PatrolPoints.Num(); ++j)
-	//{
-	//	int idx = (i + j) % m_PatrolPoints.Num();
-	//	pMonster->AddPatrolPoint(m_PatrolPoints[idx]->GetActorLocation());
-	//}
+	// 초기화 관련 호출
+	// 몬스터가 순찰해야 하는 포인트들을 알려 줌	
+	for (int j = 0; j < m_PatrolPoints.Num(); ++j)
+	{
+		//int idx = j % m_PatrolPoints.Num();
+		int idx = j;
+		pMonster->AddPatrolPoint(m_PatrolPoints[idx]->GetActorLocation());
+	}
 
 	// BeginPlay 호출
 	pMonster->FinishSpawning(pMonster->GetTransform());
+
+	++m_uCurSpawnCount;
 }
 

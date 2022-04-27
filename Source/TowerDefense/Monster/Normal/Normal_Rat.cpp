@@ -10,6 +10,7 @@ ANormal_Rat::ANormal_Rat()
 	if (RatMesh.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(RatMesh.Object);
+		GetMesh()->GetRelativeTransform().SetScale3D(Vec3(0.6f));
 	}
 
 	ConstructorHelpers::FClassFinder<UAnimInstance>
@@ -32,17 +33,22 @@ ANormal_Rat::ANormal_Rat()
 	{
 		SetBlackboard(BB.Object);
 	}
+
+	SetUnStopable(false);
 }
 
 bool ANormal_Rat::ChangeState(EMON_STATE _eNextState)
-{
+{	
+	EMON_STATE eCurState = GetState();
+
+	if (EMON_STATE::DEAD == eCurState)
+		return false;
+
 	if (EMON_STATE::HIT == _eNextState)
 	{
 		SetUnStopable(false);
 	}
 
-
-	EMON_STATE eCurState = GetState();
 	if (IsUnStopable() || eCurState == _eNextState)
 		return false;
 
@@ -60,6 +66,8 @@ bool ANormal_Rat::ChangeState(EMON_STATE _eNextState)
 	case EMON_STATE::DEAD:
 		GetMovementComponent()->StopMovementImmediately();
 		SetUnStopable(true);
+		GetMesh()->SetSimulatePhysics(true);
+		SetLifeSpan(2);
 		break;
 	default:
 		break;
@@ -89,14 +97,13 @@ void ANormal_Rat::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-
 }
 
 void ANormal_Rat::OnBeginOverlap(UPrimitiveComponent* _PrimitiveComponent, AActor* _OtherActor, UPrimitiveComponent* _OtherComp, int32 _OtherBodyIndex, bool _bFromSweep, const FHitResult& _SweepResult)
 {
 	if (ECC_GameTraceChannel4 == _OtherComp->GetCollisionObjectType())
 	{
-		LOG(Warning, "MonsterHit");
+		LOG(Warning, "MonsterOverlap");
 		ChangeState(EMON_STATE::HIT);
 		FMonInfo info = GetMonInfo();
 		info.fCurHP -= 10.f;

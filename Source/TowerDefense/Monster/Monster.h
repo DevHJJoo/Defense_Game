@@ -31,7 +31,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State, meta = (AllowPrivateAccess = "true"))
 	EMON_STATE		m_eState;
 
-	TArray<Vec3>	m_PatrolPoints;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State, meta = (AllowPrivateAccess = "true"))
+	TArray<FVector>	m_PatrolPoints;
+
 	int8			m_NextPatrolIdx;
 
 	float			m_PrevHP;

@@ -24,6 +24,9 @@ private:
 	AMonster*	m_pTarget;
 	float		m_fPrevTargetDist;
 
+private:
+	void ResetTarget(AAIController* _Controller);
+
 public:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 };

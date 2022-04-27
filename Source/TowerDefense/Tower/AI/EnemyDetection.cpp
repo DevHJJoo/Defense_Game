@@ -25,11 +25,14 @@ void UEnemyDetection::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 		return;
 
 	AMyTower* pTower = Cast<AMyTower>(pController->GetPawn());
+
 	if (nullptr == pTower)
 		return;
 
+	float fTowerDetectRange = pTower->GetTowerInfo().fDetectRange;
+
 	if (m_fPrevTargetDist == 0.f)
-		m_fPrevTargetDist = pTower->GetTowerInfo().fDetectRange;
+		m_fPrevTargetDist = fTowerDetectRange;
 
 	pController->GetBlackboardComponent()->SetValueAsBool(TEXT("AttackEnable"), pTower->GetAttackEnable());
 
@@ -41,7 +44,21 @@ void UEnemyDetection::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 	pSphere->GetOverlappingActors(OverlapList, TSubclassOf<AMonster>());
 	
 	if (0 == OverlapList.Num())
-		return;
+	{
+		m_pTarget = nullptr;
+		m_fPrevTargetDist = fTowerDetectRange;
+		pController->GetBlackboardComponent()->ClearValue(TEXT("Target"));
+	}
+
+	if (nullptr != m_pTarget)
+	{
+		if (EMON_STATE::DEAD == m_pTarget->GetState())
+		{
+			m_pTarget = nullptr;
+			m_fPrevTargetDist = fTowerDetectRange;
+			pController->GetBlackboardComponent()->ClearValue(TEXT("Target"));
+		}
+	}
 
 	Vec3 vTowerPos = pTower->GetActorLocation();
 
@@ -49,12 +66,15 @@ void UEnemyDetection::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 	{
 		for (AActor* TargetIter : OverlapList)
 		{
+			EMON_STATE TargetState = Cast<AMonster>(TargetIter)->GetState();
+			if (EMON_STATE::DEAD == TargetState)
+				continue;
+
 			float fCheckDist = Vec3::Distance(vTowerPos, TargetIter->GetActorLocation());
 			if (fCheckDist <= m_fPrevTargetDist)
 			{
+				m_pTarget = Cast<AMonster>(TargetIter);				
 				m_fPrevTargetDist = fCheckDist;
-
-				m_pTarget = Cast<AMonster>(TargetIter);
 				if (nullptr == m_pTarget)
 				{
 					pController->GetBlackboardComponent()->ClearValue(TEXT("Target"));
@@ -62,17 +82,26 @@ void UEnemyDetection::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 				}
 
 				pController->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), m_pTarget);
+				break;
 			}
 		}
 	}
 	else
 	{
-		if (false == pSphere->IsOverlappingActor(m_pTarget))
+		if (nullptr == pController->GetBlackboardComponent()->GetValueAsObject(TEXT("Target")))
 		{
 			m_pTarget = nullptr;
-			m_fPrevTargetDist = 400.f;
-			pController->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), nullptr);
+			m_fPrevTargetDist = fTowerDetectRange;
+
+			return;
 		}
-	}
-	
+
+		float fCheckDist = Vec3::Distance(vTowerPos, m_pTarget->GetActorLocation());
+		if (fCheckDist > fTowerDetectRange)
+		{
+			m_pTarget = nullptr;
+			m_fPrevTargetDist = fTowerDetectRange;
+			pController->GetBlackboardComponent()->ClearValue(TEXT("Target"));
+		}
+	}	
 }
