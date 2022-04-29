@@ -103,3 +103,37 @@ enum class EEFFECT_TYPE : uint8
 	HIT,
 	ZONE,
 };
+
+UENUM(BlueprintType)
+enum class ETOWER_SKEL : uint8
+{
+	CANNON1, CANNON2, CANNON3, CANNON4,
+	MORTAR1, MORTAR2, MORTAR3, MORTAR4,
+	TOWER3,
+	TOWER4,
+	TOWER5,
+	TOWER6,
+};
+
+UENUM(BlueprintType)
+enum class ETOWER_ABP : uint8
+{
+	CANNON1, CANNON2, CANNON3, CANNON4,
+	MORTAR1, MORTAR2, MORTAR3, MORTAR4,
+	TOWER3,
+	TOWER4,
+	TOWER5,
+	TOWER6,
+};
+
+UENUM(BlueprintType)
+enum class EENEMY_TYPE : uint8
+{
+	R1_RAT,
+	R2_RAT,
+	R3_TEMP,
+	R4_TEMP,
+	R5_TEMP,
+	R6_TEMP,
+	BOSS,
+};

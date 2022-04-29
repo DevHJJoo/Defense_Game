@@ -3,8 +3,11 @@
 #pragma once
 
 #include "../global.h"
+
 #include "../MyAnimInstance.h"
 #include "../Projectile/ProjectileBase.h"
+
+#include <Engine/AssetManager.h>
 
 #include "CoreMinimal.h"
 #include "MyTower.h"
@@ -22,7 +25,16 @@ private:
 	float m_fAttackInterval;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Info, meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<AProjectileBase> m_Projectile;
+	TSubclassOf<AProjectileBase>	m_Projectile;
+
+	TSharedPtr<FStreamableHandle>	m_Handle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Info, meta = (AllowPrivateAccess = "true"))
+	TSoftObjectPtr<USkeletalMesh>	m_MeshPath;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Info, meta = (AllowPrivateAccess = "true"))
+	TSoftObjectPtr<USoundBase>		m_SoundPath;
+
 
 public:
 	ACannon();
@@ -43,7 +55,7 @@ public:
 private:
 	void SetTowerTable(const FString& _TowerStr);
 	void SpawnProjectile(FTransform _trans);
-	bool ChangeTower(int _CurLv);
+	void ChangeTower(int _CurLv);
 
 protected:
 	virtual void Install() override;

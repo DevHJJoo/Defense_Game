@@ -1,9 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "MyEffect.h"
 
-// Sets default values
+#include "../Manager/LevelStreamMgr.h"
+
 AMyEffect::AMyEffect()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -17,40 +15,16 @@ AMyEffect::AMyEffect()
 void AMyEffect::BeginPlay()
 {
 	Super::BeginPlay();
+		
+	FSoftObjectPath assetPath = nullptr;
 
-	UParticleSystem* ParticleAsset = nullptr;
-
-	switch (m_eType)
-	{
-	case EEFFECT_TYPE::MUZZLEFLASH:
-		ParticleAsset = LoadObject<UParticleSystem>(GetWorld(),
-			TEXT("ParticleSystem'/Game/LowPolyVFX/Particles/P_Ems_MuzzleFlash_01.P_Ems_MuzzleFlash_01'"));
-		break;
-	case EEFFECT_TYPE::EXPLOSION:
-		ParticleAsset = LoadObject<UParticleSystem>(GetWorld(),
-			TEXT("ParticleSystem'/Game/LowPolyVFX/Particles/P_Ems_Explosion_02.P_Ems_Explosion_02'"));
-		break;
-	case EEFFECT_TYPE::TRAIL:
-		ParticleAsset = LoadObject<UParticleSystem>(GetWorld(),
-			TEXT("ParticleSystem'/Game/LowPolyVFX/Particles/P_SmokeTrail_01.P_SmokeTrail_01'"));
-		break;
-	case EEFFECT_TYPE::SMOKE:
-		ParticleAsset = LoadObject<UParticleSystem>(GetWorld(),
-		TEXT("ParticleSystem'/Game/LowPolyVFX/Particles/P_Smoke_01.P_Smoke_01'"));
-		break;
-	case EEFFECT_TYPE::HIT:
-		ParticleAsset = LoadObject<UParticleSystem>(GetWorld(),
-		TEXT("ParticleSystem'/Game/LowPolyVFX/Particles/P_Hit_02.P_Hit_02'"));
-		break;
-	case EEFFECT_TYPE::ZONE:
-		break;
-	}
-
+	UParticleSystem* ParticleAsset = Cast<UParticleSystem>(ULevelStreamMgr::GetInst(GetWorld())->FindAsset(Function::EnumToName(m_eType)));
 	if (nullptr != ParticleAsset)
 	{
 		m_Particle->SetTemplate(ParticleAsset);
 		m_Particle->OnSystemFinished.AddDynamic(this, &AMyEffect::OnFinish);
-	}	
+	}
+
 }
 
 // Called every frame
@@ -63,4 +37,3 @@ void AMyEffect::OnFinish(UParticleSystemComponent* _Particle)
 {
 	Destroy();
 }
-

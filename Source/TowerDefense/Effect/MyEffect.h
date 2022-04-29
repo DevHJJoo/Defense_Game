@@ -4,6 +4,8 @@
 
 #include "../global.h"
 
+#include <Engine/AssetManager.h>
+
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "MyEffect.generated.h"

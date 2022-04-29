@@ -5,6 +5,8 @@
 #include "../Projectile/Missile/Missile.h"
 #include "../MyGameInstance.h"
 
+#include "../Manager/LevelStreamMgr.h"
+
 ACannon::ACannon()
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -127,43 +129,39 @@ void ACannon::SpawnProjectile(FTransform _trans)
 	pMissile->FinishSpawning(pMissile->GetTransform());
 }
 
-bool ACannon::ChangeTower(int _CurLv)
+void ACannon::ChangeTower(int _CurLv)
 {
-	FString TargetMeshStr;
-	FString TargetABPStr;
+	USkeletalMesh* CannonMesh = nullptr;
+	UAnimBlueprint* CannonABP = nullptr;
 
 	switch (_CurLv)
 	{
 	case 1:
 		{
-			TargetMeshStr = FString(TEXT("SkeletalMesh'/Game/FattyTurret/Cannon/Lv01/CannonLv1Mesh.CannonLv1Mesh'"));
-			TargetABPStr = FString(TEXT("AnimBlueprint'/Game/BlueprintClass/Tower/Cannon/ABP_CannonLv1.ABP_CannonLv1'"));
+			CannonMesh = Cast<USkeletalMesh>(ULevelStreamMgr::GetInst(GetWorld())->FindAsset(Function::EnumToName(ETOWER_SKEL::CANNON1)));
+			CannonABP = Cast<UAnimBlueprint>(ULevelStreamMgr::GetInst(GetWorld())->FindAsset(Function::EnumToName(ETOWER_ABP::CANNON1)));
 		}
 		break;
 	case 2:
 		{
-			TargetMeshStr = FString(TEXT("SkeletalMesh'/Game/FattyTurret/Cannon/Lv02/CannonLv2Mesh.CannonLv2Mesh'"));
-			TargetABPStr = FString(TEXT("AnimBlueprint'/Game/BlueprintClass/Tower/Cannon/ABP_CannonLv2.ABP_CannonLv2'"));
+			CannonMesh = Cast<USkeletalMesh>(ULevelStreamMgr::GetInst(GetWorld())->FindAsset(Function::EnumToName(ETOWER_SKEL::CANNON2)));
+			CannonABP = Cast<UAnimBlueprint>(ULevelStreamMgr::GetInst(GetWorld())->FindAsset(Function::EnumToName(ETOWER_ABP::CANNON2)));
 		}
-
 		break;
 	case 3:
 		{
-			TargetMeshStr = FString(TEXT("SkeletalMesh'/Game/FattyTurret/Cannon/Lv03/CannonLv3Mesh.CannonLv3Mesh'"));
-			TargetABPStr = FString(TEXT("AnimBlueprint'/Game/BlueprintClass/Tower/Cannon/ABP_CannonLv3.ABP_CannonLv3'"));
+			CannonMesh = Cast<USkeletalMesh>(ULevelStreamMgr::GetInst(GetWorld())->FindAsset(Function::EnumToName(ETOWER_SKEL::CANNON3)));
+			CannonABP = Cast<UAnimBlueprint>(ULevelStreamMgr::GetInst(GetWorld())->FindAsset(Function::EnumToName(ETOWER_ABP::CANNON3)));
 		}
 		break;
 	case 4:
 		{
-			TargetMeshStr = FString(TEXT("SkeletalMesh'/Game/FattyTurret/Cannon/Lv04/CannonLv4Mesh.CannonLv4Mesh'"));
-			TargetABPStr = FString(TEXT("AnimBlueprint'/Game/BlueprintClass/Tower/Cannon/ABP_CannonLv4.ABP_CannonLv4'"));		
+			CannonMesh = Cast<USkeletalMesh>(ULevelStreamMgr::GetInst(GetWorld())->FindAsset(Function::EnumToName(ETOWER_SKEL::CANNON4)));
+			CannonABP = Cast<UAnimBlueprint>(ULevelStreamMgr::GetInst(GetWorld())->FindAsset(Function::EnumToName(ETOWER_ABP::CANNON4)));
 		}
 	default:
 		break;
 	}
-
-	USkeletalMesh* CannonMesh = LoadObject<USkeletalMesh>(NULL, *TargetMeshStr);
-	UAnimBlueprint* CannonABP = LoadObject<UAnimBlueprint>(NULL, *TargetABPStr);
 
 	if (nullptr != CannonMesh
 		&& nullptr != CannonABP)
@@ -172,12 +170,6 @@ bool ACannon::ChangeTower(int _CurLv)
 		GetMesh()->SetSkeletalMesh(CannonMesh);
 		GetMesh()->SetAnimInstanceClass(CannonABP->GeneratedClass);
 	}
-	else
-	{
-		return false;
-	}
-
-	return true;
 }
 
 void ACannon::DestroyProcess()

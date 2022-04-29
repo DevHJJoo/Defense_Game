@@ -62,7 +62,7 @@ void ASpawnPoint::Spawn()
 	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SpawnParam.bDeferConstruction = true;
 
-	Vec3 vSpawnPointLocation = GetActorLocation();	
+	Vec3 vSpawnPointLocation = GetActorLocation();
 	vSpawnPointLocation.Z = 109.f;
 
 	Vec3 vDir = Vec3(0.f);
