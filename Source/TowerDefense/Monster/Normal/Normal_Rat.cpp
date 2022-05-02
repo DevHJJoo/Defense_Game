@@ -87,6 +87,7 @@ void ANormal_Rat::BeginPlay()
 		if (nullptr != pTableRow)
 		{
 			SetMonInfo(*pTableRow);
+			GetCharacterMovement()->MaxWalkSpeed = pTableRow->fOriginMoveSpeed;
 		}
 	}
 
@@ -103,7 +104,6 @@ void ANormal_Rat::OnBeginOverlap(UPrimitiveComponent* _PrimitiveComponent, AActo
 {
 	if (ECC_GameTraceChannel4 == _OtherComp->GetCollisionObjectType())
 	{
-		LOG(Warning, "MonsterOverlap");
 		ChangeState(EMON_STATE::HIT);
 		FMonInfo info = GetMonInfo();
 		info.fCurHP -= 10.f;
@@ -116,7 +116,6 @@ void ANormal_Rat::OnHit(UPrimitiveComponent* _HitComponent, AActor* _OtherActor,
 {
 	if (ECC_GameTraceChannel4 == _OtherComp->GetCollisionObjectType())
 	{
-		LOG(Warning, "MonsterHit");
 		ChangeState(EMON_STATE::HIT);
 		FMonInfo info = GetMonInfo();
 		info.fCurHP -= 10.f;

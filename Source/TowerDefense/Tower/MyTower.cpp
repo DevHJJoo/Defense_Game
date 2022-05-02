@@ -24,7 +24,7 @@ AMyTower::AMyTower()
 
 	m_DetectSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectSphere"));
 	m_DetectSphere->SetupAttachment(m_Root);
-	m_DetectSphere->SetCollisionProfileName(TEXT("TowerType"));
+	m_DetectSphere->SetCollisionProfileName(TEXT("EnemyDetect"));
 
 	// 사용 할 AIController 클래스 지정
 	AIControllerClass = ATowerAIController::StaticClass();

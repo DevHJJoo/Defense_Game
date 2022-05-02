@@ -15,13 +15,15 @@ ATowerDefenseGameModeBase::ATowerDefenseGameModeBase()
 	if (nullptr == GI)
 		return;
 
-	ConstructorHelpers::FClassFinder<APawn>
-		MainCharacterClass(TEXT("Blueprint'/Game/BlueprintClass/BPC_Hero.BPC_Hero_C'"));
+	DefaultPawnClass = AMyCharacter::StaticClass();
 
-	if (MainCharacterClass.Succeeded())
-	{
-		DefaultPawnClass = MainCharacterClass.Class;
-	}
+	//ConstructorHelpers::FClassFinder<APawn>
+	//	MainCharacterClass(TEXT("MyCharacter"));
+
+	//if (MainCharacterClass.Succeeded())
+	//{
+	//	DefaultPawnClass = MainCharacterClass.Class;
+	//}
 }
 
 void ATowerDefenseGameModeBase::BeginPlay()
@@ -31,11 +33,12 @@ void ATowerDefenseGameModeBase::BeginPlay()
 	// InputMode
 	APlayerController* Controller = GetWorld()->GetFirstPlayerController();
 	//FInputModeUIOnly mode;
-	FInputModeGameOnly mode;
-	//FInputModeGameAndUI mode;
+	//FInputModeGameOnly mode;
+	FInputModeGameAndUI mode;
 
 	Controller->SetInputMode(mode);
-	Controller->bShowMouseCursor = false; // 언제나 마우스 커서가 보이게 한다.
-
+	Controller->bShowMouseCursor = true; // 언제나 마우스 커서가 보이게 한다.
+	Controller->bEnableClickEvents = true;	// 마우스 클릭 이벤트가 발생하도록 한다.
+	Controller->bEnableMouseOverEvents = true; // 마우스 오버 이벤트가 발생하도록 한다.
 	ULevelStreamMgr::GetInst(GetWorld())->LoadAssetAsync();
 }
