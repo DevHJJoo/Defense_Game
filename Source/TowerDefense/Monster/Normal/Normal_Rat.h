@@ -3,19 +3,16 @@
 #include "../../global.h"
 
 #include "CoreMinimal.h"
-#include "../Monster.h"
+#include "NormalMonster.h"
 #include "Normal_Rat.generated.h"
 
 UCLASS()
-class TOWERDEFENSE_API ANormal_Rat : public AMonster
+class TOWERDEFENSE_API ANormal_Rat : public ANormalMonster
 {
 	GENERATED_BODY()
 
 public:
 	ANormal_Rat();
-
-public:
-	virtual bool ChangeState(EMON_STATE _eNextState) override;
 
 protected:
 	// Called when the game starts or when spawned

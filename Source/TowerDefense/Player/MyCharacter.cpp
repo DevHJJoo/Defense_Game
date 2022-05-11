@@ -1,9 +1,11 @@
 #include "MyCharacter.h"
 
+#include "../TowerDefenseGameModeBase.h"
+
 // Sets default values
 AMyCharacter::AMyCharacter()
-	: m_CameraMargin(10.f)
-	, m_CamSpeed(5.f)
+	: m_PrevHP(0)
+	, m_PrevCoin(0)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -26,17 +28,25 @@ void AMyCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	m_PlayerCtrl = Cast<APlayerController>(GetController());
+
+	m_Info.iCoin = 2000;
 }
 
 // Called every frame
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (m_PrevHP != m_Info.uCurHP || m_PrevCoin != m_Info.iCoin)
+	{
+		ATowerDefenseGameModeBase* GM = Cast<ATowerDefenseGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 
-	if(0 == m_ScreenSizeX || 0 == m_ScreenSizeY)
-		m_PlayerCtrl->GetViewportSize(m_ScreenSizeX, m_ScreenSizeY);
+		GM->UpdatePlayHUD(m_Info.uCurHP, m_Info.iCoin);
+	}
 
-	PanMoveCamera(GetCameraFanDirection());
+	m_PrevHP = m_Info.uCurHP;
+	m_PrevCoin = m_Info.iCoin;
+
+	MoveCharacterMouseDir();
 }
 
 // Called to bind functionality to input
@@ -48,56 +58,76 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis(TEXT("Zoom"), this, &AMyCharacter::Zoom);
 }
 
-FVector	AMyCharacter::GetCameraFanDirection()
+void AMyCharacter::MoveCharacterMouseDir()
 {
 	if(nullptr == m_PlayerCtrl)
 		m_PlayerCtrl = Cast<APlayerController>(GetController());
 
-	float MousePosX;
-	float MousePosY;
-	float CamDirectionX = 0;
-	float CamDirectionY = 0;
-	float MarginX = m_ScreenSizeX * (m_CameraMargin / 100.f);
-	float MarginY = m_ScreenSizeY * (m_CameraMargin / 100.f);
-	UE_LOG(LogTemp, Warning, TEXT("Screen : (%u, %u)"), m_ScreenSizeX, m_ScreenSizeY)
-	m_PlayerCtrl->GetMousePosition(MousePosX, MousePosY);
+	float X = 0.f, Y = 0.f;
+	int32 resX = 0, resY = 0;
+	m_PlayerCtrl->GetMousePosition(X, Y);
+	m_PlayerCtrl->GetViewportSize(resX, resY);
 
-	if (MousePosX <= MarginX)
-	{
-		CamDirectionX = -1;
-	}
+	// 마우스 X,Y 포지션이 화면 중앙으로부터 멀어진 비율 값
+	float fRatioX = fabs(X - (float)(resX / 2)) / (float)(resX / 2);
+	float fRatioY = fabs(Y - (float)(resY / 2)) / (float)(resY / 2);
 
-	if (MousePosY <= MarginY)
-	{
-		CamDirectionY = -1;
-	}
-
-	if (MousePosX >= m_ScreenSizeX - MarginX)
-	{
-		CamDirectionX = 1;
-	}
-
-	if (MousePosY >= m_ScreenSizeY - MarginY)
-	{
-		CamDirectionY = 1;
-	}
-
-	return FVector(CamDirectionX, CamDirectionY, 0);
-}
-
-void AMyCharacter::PanMoveCamera(const FVector& _vPanDirection)
-{
-	if (FVector::ZeroVector == _vPanDirection)
-	{
+	// 화면 중심으로부터 마우스가 60% 이내의 위치면 처리 X
+	if (0.6f > fRatioX && 0.6f > fRatioY)
 		return;
-	}
-	else
-	{
-		Vec3 Location = GetActorLocation();
-		Location += GetCameraFanDirection() * m_CamSpeed;
-		//SetActorLocation(Location, true);
 
-		AddMovementInput(GetCameraFanDirection(), m_CamSpeed);
+	float MinSpeed = 10.f;
+	float MaxSpeed = 50.f;
+
+	// 화면 중심으로부터 60% 마우스가 멀어지면 그 방향으로 캐릭터를 회전
+	if (0.6f <= fRatioX)
+	{
+		float fDirX = 0.f;
+		if (X < (float)(resX / 2))
+		{
+			// 왼쪽으로 회전
+			fDirX = -1.f;
+		}
+		else
+		{
+			// 오른쪽으로 회전
+			fDirX = 1.f;
+		}
+
+		// 중심 화면 초과범위 60% ~ 100% 에서 속도를 초당 100 ~ 500의 속도를 가지게 된다.
+		float Alpha = (fRatioX - 0.6f) / (1.0f - 0.6f);
+		if (Alpha < 0.f) Alpha = 0.f;
+		if (Alpha > 1.f) Alpha = 1.f;
+
+		float fCurSpeed = FMath::Lerp(50.f, 200.f, Alpha);
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Cur X Alpha : %f, Speed : %f"), Alpha, fCurSpeed));
+
+		AddMovementInput(FVector(fDirX, 0.f, 0.f), fCurSpeed * GetWorld()->GetDeltaSeconds());
+	}
+
+	if (0.6f <= fRatioY)
+	{
+		float fDirY = 0.f;
+		if (Y < (float)(resY / 2))
+		{
+			// 왼쪽으로 회전
+			fDirY = -1.f;
+		}
+		else
+		{
+			// 오른쪽으로 회전
+			fDirY = 1.f;
+		}
+
+		// 중심 화면 초과범위 60% ~ 100% 에서 속도를 초당 100 ~ 500의 속도를 가지게 된다.
+		float Alpha = (fRatioY - 0.6f) / (1.0f - 0.6f);
+		if (Alpha < 0.f) Alpha = 0.f;
+		if (Alpha > 1.f) Alpha = 1.f;
+
+		float fCurSpeed = FMath::Lerp(50.f, 200.f, Alpha);
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Cur Y Alpha : %f, Speed : %f"), Alpha, fCurSpeed));
+
+		AddMovementInput(FVector(0.f, fDirY, 0.f), fCurSpeed * GetWorld()->GetDeltaSeconds());
 	}
 }
 
@@ -105,7 +135,6 @@ void AMyCharacter::MoveFront(float _fScale)
 {	
 	Vec3 Location = GetActorLocation();
 	Location += GetActorForwardVector() * 5.f * _fScale;
-	//SetActorLocation(Location, true);
 
 	AddMovementInput(GetActorForwardVector(), 5.f * _fScale);
 }
@@ -114,7 +143,6 @@ void AMyCharacter::MoveSide(float _fScale)
 {
 	Vec3 Location = GetActorLocation();
 	Location += GetActorRightVector() * 5.f * _fScale;
-	//SetActorLocation(Location, true);
 
 	AddMovementInput(GetActorRightVector(), 5.f * _fScale);
 }

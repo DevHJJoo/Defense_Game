@@ -21,9 +21,6 @@ struct FPlayerInfo
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Info, meta = (AllowPrivateAccess = "true"))
-	FString strClassName;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Info, meta = (AllowPrivateAccess = "true"))
 	float fArmLength;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Info, meta = (AllowPrivateAccess = "true"))
@@ -31,12 +28,6 @@ struct FPlayerInfo
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Info, meta = (AllowPrivateAccess = "true"))
 	uint8 uCurHP;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Info, meta = (AllowPrivateAccess = "true"))
-	int32 iMaxMP;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Info, meta = (AllowPrivateAccess = "true"))
-	int32 iCurMP;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Info, meta = (AllowPrivateAccess = "true"))
 	int32 iCoin;
@@ -113,7 +104,7 @@ struct FMonInfo
 	float	fShieldDef;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	int		iGold;
+	int32	iGold;
 };
 
 USTRUCT(Atomic, BlueprintType)

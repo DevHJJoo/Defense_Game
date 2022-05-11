@@ -1,6 +1,7 @@
 #include "MyGameInstance.h"
 
 #include "Manager/EffectMgr.h"
+#include "Player/MyCharacter.h"
 
 UMyGameInstance::UMyGameInstance()
 	: m_MonTable(nullptr)
@@ -34,4 +35,74 @@ const FTowerInfo* UMyGameInstance::GetTowerInfo(const FString& _RowName)
 {
 	FTowerInfo* pTowerInfo = m_TowerTable->FindRow<FTowerInfo>(FName(_RowName), TEXT(""));
 	return pTowerInfo;
+}
+
+const FPlayerInfo* UMyGameInstance::GetPlayerInfo(const FString& _RowName)
+{
+	FPlayerInfo* pPlayerInfo = m_PlayerInfo->FindRow<FPlayerInfo>(FName(_RowName), TEXT(""));
+	return pPlayerInfo;
+}
+
+void UMyGameInstance::DecreasePlayerHP()
+{
+	AMyCharacter* Player = Cast<AMyCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+
+	if (Player)
+	{
+		Player->DecreaseCurHP();
+	}
+}
+
+void UMyGameInstance::IncreasePlayerHP()
+{
+	AMyCharacter* Player = Cast<AMyCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+
+	if (Player)
+	{
+		Player->IncreaseCurHP();
+	}
+}
+
+uint8 UMyGameInstance::GetPlayerCurHP()
+{
+	AMyCharacter* Player = Cast<AMyCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+
+	if (Player)
+	{
+		return Player->GetCurHP();
+	}
+
+	return 0;
+}
+
+void UMyGameInstance::DecreasePlayerCoin(int32 _Coin)
+{
+	AMyCharacter* Player = Cast<AMyCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+
+	if (Player)
+	{
+		Player->DecreaseCoin(_Coin);
+	}
+}
+
+void UMyGameInstance::IncreasePlayerCoin(int32 _Coin)
+{
+	AMyCharacter* Player = Cast<AMyCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+
+	if (Player)
+	{
+		Player->IncreaseCoin(_Coin);
+	}
+}
+
+int32 UMyGameInstance::GetPlayerCoin()
+{
+	AMyCharacter* Player = Cast<AMyCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+
+	if (Player)
+	{
+		return Player->GetCoin();
+	}
+
+	return 0;
 }

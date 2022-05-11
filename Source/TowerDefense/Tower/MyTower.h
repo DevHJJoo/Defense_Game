@@ -86,7 +86,6 @@ protected:
 	}
 
 	USkeletalMeshComponent* GetMesh() { return m_TowerMesh; }
-
 	uint8 GetTowerLv() { return m_Info.uLv; }
 	ETOWER_TYPE GetTowerType() { return m_eTowerType; }
 
@@ -105,6 +104,7 @@ public:
 	USphereComponent* GetDetectSphere() { return m_DetectSphere; }
 	const FTowerInfo& GetTowerInfo() { return m_Info; }
 	void SetTowerLv(uint8 _uLv) { m_Info.uLv = _uLv; }
+	void SetMeshMtrl(UMaterialInstance* _Mtrl) { m_TowerMesh->SetMaterial(0, _Mtrl); }
 
 	UMyAnimInstance* GetAnimInst() { return m_AnimInst; }
 

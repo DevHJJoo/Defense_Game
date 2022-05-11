@@ -1,3 +1,5 @@
+#pragma once
+
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "TowerAIController.generated.h"
@@ -10,10 +12,8 @@ class TOWERDEFENSE_API ATowerAIController : public AAIController
 public:
 	ATowerAIController();
 
-	// BehaviorTreeComponent
-	// BlackboardComponent
+	
 	UBehaviorTree* m_BehaviorTree;
-
 	UBlackboardData* m_Blackboard;
 
 public:

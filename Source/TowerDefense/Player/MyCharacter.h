@@ -29,19 +29,16 @@ private:
 	APlayerController*		m_PlayerCtrl;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	float					m_CameraMargin;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	int32					m_ScreenSizeX;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	int32					m_ScreenSizeY;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	float					m_CamSpeed;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Info, meta = (AllowPrivateAccess = "true"))
 	FPlayerInfo				m_Info;
+
+	uint8					m_PrevHP;
+	int32					m_PrevCoin;
 
 public:
 	// Sets default values for this character's properties
@@ -60,10 +57,7 @@ public:
 
 private:
 	UFUNCTION()
-	FVector	GetCameraFanDirection();
-
-	UFUNCTION()
-	void PanMoveCamera(const FVector& PanDirection);
+	void MoveCharacterMouseDir();
 
 protected:
 	void SetSkeletalMesh(USkeletalMesh* _mesh) { m_SkeletalMesh = _mesh; }
@@ -73,6 +67,33 @@ public:
 	void MoveSide(float _fScale);
 	void Zoom(float _fScale);
 	APlayerController* GetPlayerController() { return m_PlayerCtrl; }
+
+	void DecreaseCurHP() {
+		if (0 < m_Info.uCurHP)
+			--(m_Info.uCurHP);
+	}
+	void IncreaseCurHP() {
+		if (m_Info.uCurHP < m_Info.uMaxHP)
+		++(m_Info.uCurHP); 
+	}
+
+	uint8 GetCurHP() { return m_Info.uCurHP; }
+
+	void DecreaseCoin(int32 _Coin) {
+		m_Info.iCoin -= _Coin;
+
+		if (0 > m_Info.iCoin)
+			m_Info.iCoin = 0;
+	}
+	void IncreaseCoin(int32 _Coin) {
+		if ((int64)_Coin + m_Info.iCoin > INT32_MAX)
+			m_Info.iCoin = INT32_MAX;
+		else
+			m_Info.iCoin += _Coin;
+	}
+
+	int32 GetCoin() { return m_Info.iCoin; }
+	const FPlayerInfo& GetInfo() { return m_Info; }	
 
 	UFUNCTION()
 	virtual void OnBeginOverlap(UPrimitiveComponent* _PrimitiveComponent, AActor* _OtherActor, UPrimitiveComponent* _OtherComp, int32 _OtherBodyIndex, bool _bFromSweep, const FHitResult& _SweepResult);
