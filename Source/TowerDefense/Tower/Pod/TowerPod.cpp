@@ -164,6 +164,7 @@ void ATowerPod::SpawnTower(ETOWER_TYPE _Type)
 
 	pTower->FinishSpawning(pTower->GetTransform());
 	m_bIsTowerInstall = true;
+	pTower->SetTowerPod(this);
 
 	ATowerDefenseGameModeBase* GM = Cast<ATowerDefenseGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 

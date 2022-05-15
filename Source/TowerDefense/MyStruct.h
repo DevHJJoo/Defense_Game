@@ -104,7 +104,7 @@ struct FMonInfo
 	float	fShieldDef;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	int32	iGold;
+	int32	iCoin;
 };
 
 USTRUCT(Atomic, BlueprintType)

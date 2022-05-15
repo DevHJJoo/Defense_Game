@@ -17,6 +17,9 @@ public:
 public:
 	virtual bool ChangeState(EMON_STATE _eNextState) override;
 
+private:
+	void DeadProcess();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

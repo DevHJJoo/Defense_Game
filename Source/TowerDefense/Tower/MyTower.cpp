@@ -3,6 +3,7 @@
 #include "AI/TowerAIController.h"
 #include "../MyAnimInstance.h"
 #include "../Monster/Monster.h"
+#include "../TowerDefenseGameModeBase.h"
 
 // Sets default values
 AMyTower::AMyTower()
@@ -45,13 +46,19 @@ AMyTower::AMyTower()
 	{
 		SetBlackboard(BB.Object);
 	}
+
+	m_TowerMesh->OnClicked.AddDynamic(this, &AMyTower::OnClicked);
 }
 
 void AMyTower::ChangeState(ETOWER_STATE _eNextState)
 {
 	if (m_eState == _eNextState)
 		return;
-	
+
+	if (_eNextState == ETOWER_STATE::ATTACK
+		&& (m_bIsNeedToUpgrade || m_bIsNeedToRemove))
+		return;
+
 	m_eState = _eNextState;
 
 	switch (_eNextState)
@@ -82,11 +89,14 @@ void AMyTower::ChangeState(ETOWER_STATE _eNextState)
 		break;
 	case ETOWER_STATE::REMOVEWITHUPGRADE:
 	{
+		m_bIsNeedToUpgrade = true;
 		RemoveWithUpgarde();
 	}
 		break;
 	case ETOWER_STATE::REMOVE:
 	{
+		m_bIsNeedToRemove = true;
+		m_InstalledPod = nullptr;
 		Remove();
 	}
 		break;
@@ -109,7 +119,7 @@ void AMyTower::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (false == m_bAttackEnable)
+	if (!m_bAttackEnable && !m_bIsNeedToUpgrade && !m_bIsNeedToRemove)
 	{
 		m_fRemainInterval -= DeltaTime;
 
@@ -119,4 +129,16 @@ void AMyTower::Tick(float DeltaTime)
 			m_bAttackEnable = true;
 		}
 	}
+}
+
+void AMyTower::OnClicked(UPrimitiveComponent* Target, FKey ButtonPressed)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Tower Clicked"))
+	ATowerDefenseGameModeBase* GM = Cast<ATowerDefenseGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	if (!GM)
+		return;
+
+	GM->GetMainHUD()->SetTowerUpAndSellTarget(this);
+	GM->GetMainHUD()->ToggleTowerUpAndSell(true);
 }

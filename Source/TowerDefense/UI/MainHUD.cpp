@@ -9,8 +9,10 @@ void UMainHUD::NativeConstruct()
 
 	m_PlayerHUD = Cast<UPlayerHUD>(GetWidgetFromName(TEXT("PlayerHUD")));
 	m_TowerSelect = Cast<UTowerSelect>(GetWidgetFromName(TEXT("TowerSelect")));
+	m_TowerUpAndSell = Cast<UTowerUpAndSell>(GetWidgetFromName(TEXT("TowerUpandSell")));
 
 	m_TowerSelect->SetVisibility(ESlateVisibility::Hidden);
+	m_TowerUpAndSell->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UMainHUD::NativeTick(const FGeometry& Geometry, float DT)
@@ -24,4 +26,12 @@ void UMainHUD::ToggleTowerSelect(bool _On)
 		m_TowerSelect->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	else
 		m_TowerSelect->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UMainHUD::ToggleTowerUpAndSell(bool _On)
+{
+	if (_On)
+		m_TowerUpAndSell->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	else
+		m_TowerUpAndSell->SetVisibility(ESlateVisibility::Hidden);
 }

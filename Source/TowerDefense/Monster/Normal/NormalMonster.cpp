@@ -49,16 +49,27 @@ bool ANormalMonster::ChangeState(EMON_STATE _eNextState)
 	case EMON_STATE::HIT:
 		break;
 	case EMON_STATE::DEAD:
-		GetMovementComponent()->StopMovementImmediately();
-		SetUnStopable(true);
-		GetMesh()->SetSimulatePhysics(true);
-		SetLifeSpan(2);
+		ANormalMonster::DeadProcess();
 		break;
 	default:
 		break;
 	}
 
 	return true;
+}
+void ANormalMonster::DeadProcess()
+{
+	GetMovementComponent()->StopMovementImmediately();
+	UMyGameInstance* GI = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	int32 Coin = GetMonInfo().iCoin;
+	
+	if (0 == Coin)
+		Coin = 0;
+
+	GI->IncreasePlayerCoin(Coin);
+	SetUnStopable(true);
+	GetMesh()->SetSimulatePhysics(true);
+	SetLifeSpan(2);
 }
 
 void ANormalMonster::BeginPlay()

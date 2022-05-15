@@ -195,12 +195,17 @@ void ACannon::Install()
 		SetTowerTable("CannonLv2");
 		break;
 	case 1:
+		ChangeTower(CurLv);
+		SetTowerTable("CannonLv1");
 	default:
 		break;
 	}
 
 	SetAttackInterval(GetTowerInfo().iAttackCount);
 	SetDetectSphereSize(GetTowerInfo().fDetectRange);
+
+	SetUpgrade(false);
+	SetRemove(false);
 }
 
 void ACannon::Idle()
@@ -232,7 +237,6 @@ void ACannon::Upgrade()
 		return;
 
 	SetTowerLv(++CurLv);
-	SetUpgrade(false);
 	ChangeState(ETOWER_STATE::INSTALL);
 }
 

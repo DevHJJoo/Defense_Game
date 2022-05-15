@@ -5,6 +5,8 @@
 
 #include "../global.h"
 
+#include "Pod/TowerPod.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "MyTower.generated.h"
@@ -35,6 +37,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	bool						m_bIsNeedToUpgrade;
 
+	UPROPERTY(VisibleAnywhere)
+	bool						m_bIsNeedToRemove;
+
 	// 가장 가까이 인지한 몬스터의 방향을 가리키도록 한다.
 
 	UPROPERTY(VisibleAnywhere)
@@ -52,6 +57,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Info, meta = (AllowPrivateAccess = "true"))
 	FTowerInfo					m_Info;
 
+	UPROPERTY(VisibleAnywhere)
+	ATowerPod*					m_InstalledPod;
+
 protected:
 	ETOWER_TYPE					m_eTowerType;
 
@@ -61,10 +69,14 @@ public:
 
 	void SetUpgrade(bool _b) { m_bIsNeedToUpgrade = _b; }
 	bool IsNeedToUpgrade() { return m_bIsNeedToUpgrade; }
+	void SetRemove(bool _b) { m_bIsNeedToRemove = _b; }
+	bool IsNeedToRemove() { return m_bIsNeedToRemove; }
 
 	void SetTowerInfo(const FTowerInfo& _info) { m_Info = _info; }
 	ETOWER_STATE GetState() { return m_eState; }
 	void ChangeState(ETOWER_STATE _eNextState);
+	void SetTowerPod(ATowerPod* _pod) { m_InstalledPod = _pod; }
+	ATowerPod* GetTowerPod() { return m_InstalledPod; }
 
 	void SetDirection(float _f) { m_fDirection = _f; }
 	float GetDirection() { return m_fDirection; }
@@ -134,4 +146,9 @@ protected:
 	virtual void Upgrade() {}
 	virtual void RemoveWithUpgarde() {}
 	virtual void Remove() {}
+
+
+public:
+	UFUNCTION()
+	void OnClicked(UPrimitiveComponent* Target, FKey ButtonPressed);
 };

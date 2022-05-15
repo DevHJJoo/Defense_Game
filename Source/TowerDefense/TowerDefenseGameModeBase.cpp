@@ -10,7 +10,15 @@
 
 ATowerDefenseGameModeBase::ATowerDefenseGameModeBase()
 {
-	DefaultPawnClass = AMyCharacter::StaticClass();
+	//DefaultPawnClass = AMyCharacter::StaticClass();
+
+	ConstructorHelpers::FClassFinder<APawn>
+		MainCharacterClass(TEXT("Blueprint'/Game/BlueprintClass/BPC_Player.BPC_Player_C'"));
+
+	if (MainCharacterClass.Succeeded())
+	{
+		DefaultPawnClass = MainCharacterClass.Class;
+	}
 
 	ConstructorHelpers::FClassFinder<UUserWidget> MainHUD(TEXT("WidgetBlueprint'/Game/BlueprintClass/Widget/MainHUD.MainHUD_C'"));
 	if (MainHUD.Succeeded())
@@ -61,6 +69,11 @@ void ATowerDefenseGameModeBase::UpdatePlayHUD(uint8 _CurHP, int32 _CurCoin)
 void ATowerDefenseGameModeBase::ToggleTowerSelect(bool _On)
 {
 	m_MainHUD->ToggleTowerSelect(_On);
+}
+
+void ATowerDefenseGameModeBase::ToggleTowerUpAndSell(bool _On)
+{
+	m_MainHUD->ToggleTowerUpAndSell(_On);
 }
 
 void ATowerDefenseGameModeBase::SetGamePaused(bool _bIsPaused)

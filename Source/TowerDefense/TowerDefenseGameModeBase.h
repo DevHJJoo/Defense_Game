@@ -31,6 +31,8 @@ public:
 	UMainHUD* GetMainHUD() { return m_MainHUD; }
 	void UpdatePlayHUD(uint8 _CurHP, int32 _CurCoin);
 	void ToggleTowerSelect(bool _On);
+	void ToggleTowerUpAndSell(bool _On);
+	
 
 	void SetGamePaused(bool _bIsPaused);
 	void LooseGame();
